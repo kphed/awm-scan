@@ -7,6 +7,7 @@ import {
   getEventDescription,
   getAllFacets,
   getMethodDescription,
+  ROLE_DESCRIPTIONS,
 } from "../src/lib/contracts";
 import { LIFECYCLE_FLOWS } from "../src/lib/contracts/flows";
 import {
@@ -111,6 +112,7 @@ describe("contracts data layer", () => {
   });
 
   test("reflects the approved registry audit corrections", () => {
+    const burnPreparableFacet = FACET_REGISTRY.get("BurnPreparableFacet");
     const burnRespondableFacet = FACET_REGISTRY.get("BurnRespondableFacet");
     const erc20Facet = FACET_REGISTRY.get(
       "ERC20FacetTransferBurnableStoppable",
@@ -125,6 +127,44 @@ describe("contracts data layer", () => {
     const timelockableFacet = FACET_REGISTRY.get("TimelockableFacet");
     const pausableFacet = FACET_REGISTRY.get("PausableFacetTimelockable");
 
+    expect(burnPreparableFacet).toMatchObject({
+      requiredRolesNote:
+        "Source also requires the burner_ argument to already hold the BURNER role.",
+      dependencies: [
+        {
+          target: "BurnRespondableFacet",
+          relationship: "Queued requests are resolved by the approval facet",
+          direction: "uses",
+          type: "workflow",
+        },
+        {
+          target: "ERC20FacetTransferBurnableStoppable",
+          relationship:
+            "Preparing a burn moves the requested balance into the burner account while the request stays pending",
+          direction: "uses",
+          type: "shared-state",
+        },
+      ],
+    });
+    expect(burnRespondableFacet).toMatchObject({
+      operationalImpact:
+        "This is the review queue for staged redemptions: approval settles the burn immediately, while rejection returns the staged balance to the requester.",
+      dependencies: [
+        {
+          target: "BurnPreparableFacet",
+          relationship: "Approves or rejects requests created by intake",
+          direction: "uses",
+          type: "workflow",
+        },
+        {
+          target: "ERC20FacetTransferBurnableStoppable",
+          relationship:
+            "Approved or rejected staged burns mutate shared ERC-20 balances and supply",
+          direction: "uses",
+          type: "shared-state",
+        },
+      ],
+    });
     expect(burnRespondableFacet?.dependencies).toEqual([
       {
         target: "BurnPreparableFacet",
@@ -182,6 +222,8 @@ describe("contracts data layer", () => {
         "Grants and renounces operational roles through timelocked controls, while role revocation by the admin remains direct.",
       operationalImpact:
         "Governance can delay new role assignments and self-renouncements, but admin-initiated revocations execute immediately for rapid incident response.",
+      requiredRolesNote:
+        "Displayed DEFAULT_ADMIN_ROLE is registry shorthand: grantRole first passes the timelock and then getRoleAdmin(role), revokeRole uses getRoleAdmin(role) directly, and renounceRole is self-confirmed by the caller.",
       dependencies: [
         {
           target: "TimelockableFacet",
@@ -218,9 +260,28 @@ describe("contracts data layer", () => {
         },
       ],
     });
+    expect(ROLE_DESCRIPTIONS).toMatchObject({
+      TOKENIZATION_AGENT:
+        "Operates subscription and redemption workflows, and can queue or cancel certain timelocked actions.",
+      TOKEN_ADMIN:
+        "Manages token lifecycle, metadata, pause controls, and token-admin timelock actions.",
+      ACCOUNT_ADMIN:
+        "Controls investor-account restrictions, stop codes, and account-admin timelock actions.",
+      DEFAULT_ADMIN_ROLE:
+        "Registry shorthand for the current admin role behind grant/revoke operations; source uses getRoleAdmin(role) instead of a fixed LibFactBase constant.",
+    });
   });
 
   test("keeps lifecycle flow timelines aligned with direct and timelocked governance paths", () => {
+    const subscriptionMintFlow = LIFECYCLE_FLOWS.find(
+      (flow) => flow.id === "subscription-mint",
+    );
+    const immediateRedemptionFlow = LIFECYCLE_FLOWS.find(
+      (flow) => flow.id === "immediate-redemption",
+    );
+    const gatedRedemptionFlow = LIFECYCLE_FLOWS.find(
+      (flow) => flow.id === "gated-redemption",
+    );
     const emergencyPauseFlow = LIFECYCLE_FLOWS.find(
       (flow) => flow.id === "emergency-pause",
     );
@@ -228,6 +289,69 @@ describe("contracts data layer", () => {
       (flow) => flow.id === "module-upgrade",
     );
 
+    expect(subscriptionMintFlow?.steps[1]).toEqual({
+      label: "Compliance Check",
+      description:
+        "The system reads the investor stop codes to confirm subscriptions are not blocked before minting.",
+      facetName: "StopCodesFacet",
+      methodName: "getStopCodes",
+      actor: "System",
+      isOnChain: true,
+    });
+    expect(immediateRedemptionFlow?.steps[1]).toEqual({
+      label: "Compliance Check",
+      description:
+        "The system reads the investor stop codes to confirm redemptions are not blocked before burning.",
+      facetName: "StopCodesFacet",
+      methodName: "getStopCodes",
+      actor: "System",
+      isOnChain: true,
+    });
+    expect(gatedRedemptionFlow?.steps).toEqual([
+      {
+        label: "Request Queued",
+        description:
+          "The tokenization agent creates a pending redemption request for the investor and amount.",
+        facetName: "BurnPreparableFacet",
+        methodName: "prepareBurn",
+        actor: "Operator",
+        isOnChain: true,
+      },
+      {
+        label: "Request Review",
+        description:
+          "Operations reviews the pending request against compliance and liquidity constraints.",
+        facetName: "BurnRespondableFacet",
+        actor: "Operator",
+        isOnChain: false,
+      },
+      {
+        label: "Request Approved",
+        description:
+          "The tokenization agent approves the pending burn request and triggers the final settlement path.",
+        facetName: "BurnRespondableFacet",
+        methodName: "approveBurn",
+        actor: "Operator",
+        isOnChain: true,
+      },
+      {
+        label: "Staged Tokens Burned",
+        description:
+          "Approval immediately burns the staged burner balance and reduces total supply.",
+        facetName: "BurnRespondableFacet",
+        actor: "System",
+        isOnChain: true,
+      },
+      {
+        label: "Request Rejected",
+        description:
+          "Alternatively, the tokenization agent rejects the queued request and leaves the investor balance unchanged.",
+        facetName: "BurnRespondableFacet",
+        methodName: "rejectBurn",
+        actor: "Operator",
+        isOnChain: true,
+      },
+    ]);
     expect(emergencyPauseFlow?.steps).toEqual([
       {
         label: "Pause Initiated",

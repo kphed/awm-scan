@@ -33,7 +33,7 @@ export const LIFECYCLE_FLOWS: LifecycleFlow[] = [
       {
         label: "Compliance Check",
         description:
-          "The system verifies the account status and stop codes allow subscriptions.",
+          "The system reads the investor stop codes to confirm subscriptions are not blocked before minting.",
         facetName: "StopCodesFacet",
         methodName: "getStopCodes",
         actor: "System",
@@ -75,7 +75,7 @@ export const LIFECYCLE_FLOWS: LifecycleFlow[] = [
       {
         label: "Compliance Check",
         description:
-          "The system verifies the investor account and stop codes allow redemptions.",
+          "The system reads the investor stop codes to confirm redemptions are not blocked before burning.",
         facetName: "StopCodesFacet",
         methodName: "getStopCodes",
         actor: "System",
@@ -134,11 +134,10 @@ export const LIFECYCLE_FLOWS: LifecycleFlow[] = [
         isOnChain: true,
       },
       {
-        label: "Burn Executed",
+        label: "Staged Tokens Burned",
         description:
-          "The burn module removes the approved tokens from circulation and updates balances.",
-        facetName: "BurnableFacet",
-        methodName: "burn",
+          "Approval immediately burns the staged burner balance and reduces total supply.",
+        facetName: "BurnRespondableFacet",
         actor: "System",
         isOnChain: true,
       },

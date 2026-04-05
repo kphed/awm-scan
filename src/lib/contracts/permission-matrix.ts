@@ -16,12 +16,13 @@ export interface PermissionMatrixData {
 
 export const ROLE_DESCRIPTIONS: Record<string, string> = {
   TOKENIZATION_AGENT:
-    "Authorized to mint and burn fund tokens on behalf of the protocol.",
-  TOKEN_ADMIN: "Manages token lifecycle, metadata, activation, and pausing.",
+    "Operates subscription and redemption workflows, and can queue or cancel certain timelocked actions.",
+  TOKEN_ADMIN:
+    "Manages token lifecycle, metadata, pause controls, and token-admin timelock actions.",
   ACCOUNT_ADMIN:
-    "Controls investor-account restrictions, freezes, force-transfers, and stop codes.",
+    "Controls investor-account restrictions, stop codes, and account-admin timelock actions.",
   DEFAULT_ADMIN_ROLE:
-    "Top-level administrator that grants and revokes operational roles.",
+    "Registry shorthand for the current admin role behind grant/revoke operations; source uses getRoleAdmin(role) instead of a fixed LibFactBase constant.",
   OWNER: "Contract owner that controls module upgrades and ownership changes.",
   PUBLIC: "No dedicated role is required to invoke these write operations.",
 };

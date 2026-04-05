@@ -54,6 +54,14 @@ test("architecture page renders progressive disclosure without browser errors", 
   ).toBeVisible();
   await expect(page.getByRole("link", { name: /0xe70c/i })).toBeVisible();
   await expect(page.getByText("Metadata Missing")).toHaveCount(0);
+  await page.getByRole("button", { name: "Redemption Intake" }).click();
+  await expect(
+    page.getByText(
+      "Source also requires the burner_ argument to already hold the BURNER role.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Subscription Processing" }).click();
 
   await page.getByRole("button", { name: "Write Operations" }).click();
   await expect(
@@ -78,7 +86,7 @@ test("architecture page renders progressive disclosure without browser errors", 
 
   await page.getByRole("tab", { name: "Permission Matrix" }).click();
   await expect(
-    page.getByText("Registry-authored responsibility view", { exact: false }),
+    page.getByText("Registry-authored caller-role view", { exact: false }),
   ).toBeVisible();
   await expect(page.locator("table")).toHaveCount(5);
   await expect(
@@ -132,6 +140,10 @@ test("architecture page renders progressive disclosure without browser errors", 
   await expect(
     page.getByText("Request Approved", { exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByText("Staged Tokens Burned", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Burn Executed", { exact: true })).toHaveCount(0);
   await expect(page.getByText("approveBurn()", { exact: true })).toBeVisible();
   await page
     .getByRole("button", { name: "Redemption Approval" })

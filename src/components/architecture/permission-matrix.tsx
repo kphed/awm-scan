@@ -48,7 +48,9 @@ const PermissionMatrix = ({ data, onSelectFacet }: PermissionMatrixProps) => {
   return (
     <Stack gap="4">
       <Text color="fg.muted" fontSize="sm" lineHeight="tall">
-        Registry-authored responsibility view for write-capable modules. Hover a
+        Registry-authored caller-role view for write-capable modules. Some
+        modules also rely on parameter-level checks or dynamic role-admin
+        lookups, which are called out in the shared module details. Hover a
         permission marker to inspect the write methods covered by that role, and
         click it to open the shared module details.
       </Text>

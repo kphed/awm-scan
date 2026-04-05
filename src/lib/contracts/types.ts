@@ -49,6 +49,7 @@ export interface FacetMetadata {
   operationalImpact: string;
   eipReference?: string;
   requiredRoles: string[];
+  requiredRolesNote?: string;
   dependencies?: FacetDependency[];
 }
 

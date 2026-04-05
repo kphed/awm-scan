@@ -93,6 +93,11 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
                 ))}
               </Wrap>
             )}
+            {facet.requiredRolesNote ? (
+              <Text color="fg.muted" fontSize="sm" mt="2">
+                {facet.requiredRolesNote}
+              </Text>
+            ) : null}
           </Box>
           {facet.eipReference ? (
             <Box>

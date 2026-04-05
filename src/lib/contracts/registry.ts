@@ -46,12 +46,21 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the queueing step for gated redemptions, giving operations an audit trail before capital leaves the fund.",
     requiredRoles: ["TOKENIZATION_AGENT"],
+    requiredRolesNote:
+      "Source also requires the burner_ argument to already hold the BURNER role.",
     dependencies: [
       {
         target: "BurnRespondableFacet",
         relationship: "Queued requests are resolved by the approval facet",
         direction: "uses",
         type: "workflow",
+      },
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship:
+          "Preparing a burn moves the requested balance into the burner account while the request stays pending",
+        direction: "uses",
+        type: "shared-state",
       },
     ],
   },
@@ -62,7 +71,7 @@ const FACET_METADATA: FacetMetadata[] = [
     businessSummary:
       "Approves, rejects, and inspects pending redemption requests.",
     operationalImpact:
-      "This is the control point that mirrors a fund redemption review queue, allowing operations to approve or reject exits before burning tokens.",
+      "This is the review queue for staged redemptions: approval settles the burn immediately, while rejection returns the staged balance to the requester.",
     requiredRoles: ["TOKENIZATION_AGENT"],
     dependencies: [
       {
@@ -185,6 +194,8 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "Governance can delay new role assignments and self-renouncements, but admin-initiated revocations execute immediately for rapid incident response.",
     requiredRoles: ["DEFAULT_ADMIN_ROLE"],
+    requiredRolesNote:
+      "Displayed DEFAULT_ADMIN_ROLE is registry shorthand: grantRole first passes the timelock and then getRoleAdmin(role), revokeRole uses getRoleAdmin(role) directly, and renounceRole is self-confirmed by the caller.",
     dependencies: [
       {
         target: "TimelockableFacet",
