@@ -40,6 +40,9 @@ test("architecture page renders progressive disclosure without browser errors", 
       "splits the contract's functionality across multiple modules",
     ),
   ).toBeVisible();
+  await expect(
+    page.getByText("Select a module to explore its capabilities"),
+  ).toBeVisible();
   await expect(page.getByText("mint(bytes32,address,uint256)")).toHaveCount(0);
 
   await page.getByRole("button", { name: "Subscription Processing" }).click();
@@ -78,12 +81,16 @@ test("architecture page renders progressive disclosure without browser errors", 
     page.getByText("Registry-authored responsibility view", { exact: false }),
   ).toBeVisible();
   await expect(
+    page.getByText("Select a module to explore its capabilities"),
+  ).toBeHidden();
+  await expect(
     page.locator("table").getByText("TOKENIZATION_AGENT", { exact: true }),
   ).toBeVisible();
   await page.getByLabel("Open Token Transfers details for PUBLIC").click();
   await expect(
-    page.getByRole("heading", { name: "Token Transfers" }),
+    page.locator('[data-part="title"]', { hasText: "Token Transfers" }),
   ).toBeVisible();
+  await page.keyboard.press("Escape");
 
   await page.getByRole("tab", { name: "Dependencies" }).click();
   await page.getByRole("button", { name: /Redemption Approval/i }).click();
@@ -99,6 +106,7 @@ test("architecture page renders progressive disclosure without browser errors", 
       })
       .first(),
   ).toBeVisible();
+  await page.keyboard.press("Escape");
 
   await page.getByRole("tab", { name: "Lifecycle Flows" }).click();
   await page
@@ -113,12 +121,14 @@ test("architecture page renders progressive disclosure without browser errors", 
     .first()
     .click();
   await expect(
-    page.getByText(
-      "Approves, rejects, and inspects pending redemption requests.",
-      {
-        exact: true,
-      },
-    ),
+    page
+      .getByRole("dialog")
+      .getByText(
+        "Approves, rejects, and inspects pending redemption requests.",
+        {
+          exact: true,
+        },
+      ),
   ).toBeVisible();
 
   await page.waitForTimeout(250);

@@ -27,10 +27,13 @@ interface ArchitectureMapProps {
 }
 
 const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
+  const [activeTab, setActiveTab] = useState("map");
   const [selectedFacet, setSelectedFacet] = useState<ArchitectureFacet | null>(
     null,
   );
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
+  const showDesktopSidebar = !isMobile && activeTab === "map";
+  const showOverlayDetails = Boolean(selectedFacet) && !showDesktopSidebar;
   const handleFacetSelect = useCallback((facet: ArchitectureFacet | null) => {
     setSelectedFacet(facet);
   }, []);
@@ -72,8 +75,13 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
             <Tabs.Root
               defaultValue="map"
               lazyMount
+              value={activeTab}
               unmountOnExit
               variant="line"
+              onValueChange={(details) => {
+                setActiveTab(details.value);
+                setSelectedFacet(null);
+              }}
             >
               <Tabs.List overflowX="auto" overflowY="hidden">
                 <Tabs.Trigger value="map">Module Map</Tabs.Trigger>
@@ -120,7 +128,7 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
         </Box>
 
         <Box
-          display={{ base: "none", md: "block" }}
+          display={showDesktopSidebar ? "block" : "none"}
           flex="1"
           minW={{ md: "22rem", lg: "24rem" }}
           position="sticky"
@@ -155,8 +163,8 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
       </Flex>
 
       <Drawer.Root
-        placement="bottom"
-        open={isMobile ? Boolean(selectedFacet) : false}
+        placement={isMobile ? "bottom" : "end"}
+        open={showOverlayDetails}
         onOpenChange={(details) => {
           if (!details.open) {
             setSelectedFacet(null);
@@ -166,7 +174,10 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
         <Portal>
           <Drawer.Backdrop />
           <Drawer.Positioner>
-            <Drawer.Content roundedTop="2xl" maxH="85vh">
+            <Drawer.Content
+              roundedTop={isMobile ? "2xl" : undefined}
+              maxH={isMobile ? "85vh" : "100vh"}
+            >
               <Drawer.Header>
                 <Drawer.Title>
                   {selectedFacet ? selectedFacet.displayName : "Module details"}
