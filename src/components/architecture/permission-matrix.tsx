@@ -81,7 +81,11 @@ const PermissionMatrix = ({ data, onSelectFacet }: PermissionMatrixProps) => {
                       Role
                     </Table.ColumnHeader>
                     {cluster.facets.map((facet) => (
-                      <Table.ColumnHeader key={facet.name} minW="12rem">
+                      <Table.ColumnHeader
+                        key={facet.name}
+                        minW="12rem"
+                        textAlign="center"
+                      >
                         <Text
                           fontSize="xs"
                           fontWeight="semibold"
@@ -129,54 +133,61 @@ const PermissionMatrix = ({ data, onSelectFacet }: PermissionMatrixProps) => {
                             key={`${cluster.id}-${role}-${facet.name}`}
                             textAlign="center"
                           >
-                            {hasPermission && fullFacet ? (
-                              <Tooltip
-                                content={
-                                  <Stack gap="2">
-                                    <Text fontWeight="medium">
-                                      {facet.displayName}
-                                    </Text>
-                                    {writeMethods.map((method) => (
-                                      <Code
-                                        key={`${facet.name}-${method}`}
-                                        fontSize="xs"
-                                      >
-                                        {method}()
-                                      </Code>
-                                    ))}
-                                  </Stack>
-                                }
-                                contentProps={{ maxW: "xs" }}
-                                openDelay={150}
-                                showArrow
-                              >
-                                <Box
-                                  as="button"
-                                  display="inline-flex"
-                                  alignItems="center"
-                                  justifyContent="center"
-                                  aria-label={`Open ${facet.displayName} details for ${role}`}
-                                  onClick={() => onSelectFacet(fullFacet)}
+                            <Box
+                              width="full"
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                            >
+                              {hasPermission && fullFacet ? (
+                                <Tooltip
+                                  content={
+                                    <Stack gap="2">
+                                      <Text fontWeight="medium">
+                                        {facet.displayName}
+                                      </Text>
+                                      {writeMethods.map((method) => (
+                                        <Code
+                                          key={`${facet.name}-${method}`}
+                                          fontSize="xs"
+                                        >
+                                          {method}()
+                                        </Code>
+                                      ))}
+                                    </Stack>
+                                  }
+                                  contentProps={{ maxW: "xs" }}
+                                  openDelay={150}
+                                  showArrow
                                 >
-                                  <Badge
-                                    colorPalette={facet.colorPalette}
-                                    variant="solid"
-                                    borderRadius="full"
-                                    minW="5"
-                                    h="5"
+                                  <Box
+                                    as="button"
                                     display="inline-flex"
                                     alignItems="center"
                                     justifyContent="center"
-                                    fontSize="sm"
-                                    lineHeight="1"
+                                    aria-label={`Open ${facet.displayName} details for ${role}`}
+                                    onClick={() => onSelectFacet(fullFacet)}
                                   >
-                                    •
-                                  </Badge>
-                                </Box>
-                              </Tooltip>
-                            ) : (
-                              <Text color="fg.subtle">-</Text>
-                            )}
+                                    <Badge
+                                      colorPalette={facet.colorPalette}
+                                      variant="solid"
+                                      borderRadius="full"
+                                      minW="5"
+                                      h="5"
+                                      display="inline-flex"
+                                      alignItems="center"
+                                      justifyContent="center"
+                                      fontSize="sm"
+                                      lineHeight="1"
+                                    >
+                                      •
+                                    </Badge>
+                                  </Box>
+                                </Tooltip>
+                              ) : (
+                                <Text color="fg.subtle">-</Text>
+                              )}
+                            </Box>
                           </Table.Cell>
                         );
                       })}

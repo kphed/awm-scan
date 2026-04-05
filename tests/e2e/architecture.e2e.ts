@@ -82,6 +82,9 @@ test("architecture page renders progressive disclosure without browser errors", 
   ).toBeVisible();
   await expect(page.locator("table")).toHaveCount(5);
   await expect(
+    page.locator("table").nth(1).locator("thead th").nth(1),
+  ).toHaveCSS("text-align", "center");
+  await expect(
     page.getByText("Select a module to explore its capabilities"),
   ).toBeHidden();
   await expect(
