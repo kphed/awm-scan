@@ -2,7 +2,19 @@
 
 AWM (Asset Wealth Management) Scan is a dedicated JPM MONY explorer designed to accelerate AWM team comprehension, increase decision velocity, and establish product-owned visibility over the protocol.
 
-## App Features
+## Resources
+
+- MONY smart contract (Diamond Proxy): `https://etherscan.io/address/0x6a7c6aa2b8b8a6A891dE552bDEFFa87c3F53bD46#code`.
+- ERC-2535: Diamonds, Multi-Facet Proxy: `https://eips.ethereum.org/EIPS/eip-2535`.
+
+## Tools
+
+- Foundry cast: A CLI tool for interacting with the EVM: `https://www.getfoundry.sh/reference/cast/cast`.
+
+Example usage of the `cast` tool for retrieving the MONY facet addresses:
+```
+cast call -r https://eth.drpc.org 0x6a7c6aa2b8b8a6A891dE552bDEFFa87c3F53bD46 "facetAddresses()(address[])"
+```
 
 ## App Features
 
