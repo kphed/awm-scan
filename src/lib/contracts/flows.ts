@@ -163,32 +163,41 @@ export const LIFECYCLE_FLOWS: LifecycleFlow[] = [
       {
         label: "Pause Initiated",
         description:
-          "A token admin submits the pause action to halt token activity.",
+          "A token admin pauses the contract directly so transfers, mints, and burns halt immediately.",
         facetName: "PausableFacetTimelockable",
         methodName: "pause",
         actor: "Governance",
         isOnChain: true,
       },
       {
-        label: "Timelock Delay",
-        description:
-          "The action moves through the governance delay window before it can take effect.",
-        facetName: "TimelockableFacet",
-        actor: "System",
-        isOnChain: true,
-      },
-      {
         label: "Transfers Halted",
         description:
-          "Transfers, mints, and burns are blocked while the token remains paused.",
+          "All guarded operations revert while the pause flag remains active.",
         facetName: "ERC20FacetTransferBurnableStoppable",
         actor: "System",
         isOnChain: true,
       },
       {
-        label: "Unpause When Clear",
+        label: "Unpause Queued",
         description:
-          "Once operations clears the incident, governance unpauses the token and resumes activity.",
+          "Once the incident is contained, the token admin queues the unpause action through the governance timelock.",
+        facetName: "TimelockableFacet",
+        methodName: "queueTransaction",
+        actor: "Governance",
+        isOnChain: true,
+      },
+      {
+        label: "Timelock Delay",
+        description:
+          "The queued unpause waits through the governance delay window before execution opens.",
+        facetName: "TimelockableFacet",
+        actor: "System",
+        isOnChain: true,
+      },
+      {
+        label: "Unpause Executed",
+        description:
+          "After the delay expires, the token admin executes unpause and resumes activity.",
         facetName: "PausableFacetTimelockable",
         methodName: "unpause",
         actor: "Governance",
@@ -202,27 +211,19 @@ export const LIFECYCLE_FLOWS: LifecycleFlow[] = [
     description: "Add, replace, or remove a facet module on the Diamond proxy.",
     steps: [
       {
-        label: "Upgrade Proposed",
+        label: "Upgrade Prepared",
         description:
-          "The owner prepares a DiamondCut transaction with the selectors to add, replace, or remove.",
+          "The contract owner prepares the DiamondCut payload off-chain with the selectors to add, replace, or remove.",
         facetName: "DiamondCutFacet",
-        methodName: "diamondCut",
         actor: "Governance",
-        isOnChain: true,
-      },
-      {
-        label: "Timelock Delay",
-        description:
-          "The cut enters the governance queue so operators have a review window before execution.",
-        facetName: "TimelockableFacet",
-        actor: "System",
-        isOnChain: true,
+        isOnChain: false,
       },
       {
         label: "Cut Executed",
         description:
-          "After the delay expires, the Diamond routing table is updated to the new module set.",
+          "The owner calls diamondCut directly to update the Diamond routing table to the new module set.",
         facetName: "DiamondCutFacet",
+        methodName: "diamondCut",
         actor: "Governance",
         isOnChain: true,
       },

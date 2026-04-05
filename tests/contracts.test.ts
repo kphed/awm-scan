@@ -115,6 +115,9 @@ describe("contracts data layer", () => {
     const erc20Facet = FACET_REGISTRY.get(
       "ERC20FacetTransferBurnableStoppable",
     );
+    const accessControlFacet = FACET_REGISTRY.get(
+      "AccessControlFacetTimelockable",
+    );
     const managedTokenFacet = FACET_REGISTRY.get(
       "ManagedTokenFacetTimelockable",
     );
@@ -174,6 +177,21 @@ describe("contracts data layer", () => {
         type: "shared-state",
       },
     ]);
+    expect(accessControlFacet).toMatchObject({
+      businessSummary:
+        "Grants and renounces operational roles through timelocked controls, while role revocation by the admin remains direct.",
+      operationalImpact:
+        "Governance can delay new role assignments and self-renouncements, but admin-initiated revocations execute immediately for rapid incident response.",
+      dependencies: [
+        {
+          target: "TimelockableFacet",
+          relationship:
+            "grantRole and renounceRole execute only after the timelock delay",
+          direction: "uses",
+          type: "governance",
+        },
+      ],
+    });
     expect(timelockableFacet?.requiredRoles).toEqual([
       "TOKEN_ADMIN",
       "ACCOUNT_ADMIN",
@@ -200,6 +218,89 @@ describe("contracts data layer", () => {
         },
       ],
     });
+  });
+
+  test("keeps lifecycle flow timelines aligned with direct and timelocked governance paths", () => {
+    const emergencyPauseFlow = LIFECYCLE_FLOWS.find(
+      (flow) => flow.id === "emergency-pause",
+    );
+    const moduleUpgradeFlow = LIFECYCLE_FLOWS.find(
+      (flow) => flow.id === "module-upgrade",
+    );
+
+    expect(emergencyPauseFlow?.steps).toEqual([
+      {
+        label: "Pause Initiated",
+        description:
+          "A token admin pauses the contract directly so transfers, mints, and burns halt immediately.",
+        facetName: "PausableFacetTimelockable",
+        methodName: "pause",
+        actor: "Governance",
+        isOnChain: true,
+      },
+      {
+        label: "Transfers Halted",
+        description:
+          "All guarded operations revert while the pause flag remains active.",
+        facetName: "ERC20FacetTransferBurnableStoppable",
+        actor: "System",
+        isOnChain: true,
+      },
+      {
+        label: "Unpause Queued",
+        description:
+          "Once the incident is contained, the token admin queues the unpause action through the governance timelock.",
+        facetName: "TimelockableFacet",
+        methodName: "queueTransaction",
+        actor: "Governance",
+        isOnChain: true,
+      },
+      {
+        label: "Timelock Delay",
+        description:
+          "The queued unpause waits through the governance delay window before execution opens.",
+        facetName: "TimelockableFacet",
+        actor: "System",
+        isOnChain: true,
+      },
+      {
+        label: "Unpause Executed",
+        description:
+          "After the delay expires, the token admin executes unpause and resumes activity.",
+        facetName: "PausableFacetTimelockable",
+        methodName: "unpause",
+        actor: "Governance",
+        isOnChain: true,
+      },
+    ]);
+    expect(moduleUpgradeFlow?.steps).toEqual([
+      {
+        label: "Upgrade Prepared",
+        description:
+          "The contract owner prepares the DiamondCut payload off-chain with the selectors to add, replace, or remove.",
+        facetName: "DiamondCutFacet",
+        actor: "Governance",
+        isOnChain: false,
+      },
+      {
+        label: "Cut Executed",
+        description:
+          "The owner calls diamondCut directly to update the Diamond routing table to the new module set.",
+        facetName: "DiamondCutFacet",
+        methodName: "diamondCut",
+        actor: "Governance",
+        isOnChain: true,
+      },
+      {
+        label: "Loupe Reflects Changes",
+        description:
+          "The Diamond Loupe returns the updated list of facets, addresses, and selectors.",
+        facetName: "DiamondLoupeFacet",
+        methodName: "facets",
+        actor: "System",
+        isOnChain: true,
+      },
+    ]);
   });
 
   test("keeps lifecycle flow facet references aligned with assembled facets", () => {

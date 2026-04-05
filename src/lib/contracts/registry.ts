@@ -181,14 +181,15 @@ const FACET_METADATA: FacetMetadata[] = [
     displayName: "Role Administration",
     cluster: "governance-admin",
     businessSummary:
-      "Grants, revokes, and audits operational roles behind timelocked controls.",
+      "Grants and renounces operational roles through timelocked controls, while role revocation by the admin remains direct.",
     operationalImpact:
-      "This is the permissioning layer for the fund. It determines who can mint, manage accounts, pause the token, and administer other controls.",
+      "Governance can delay new role assignments and self-renouncements, but admin-initiated revocations execute immediately for rapid incident response.",
     requiredRoles: ["DEFAULT_ADMIN_ROLE"],
     dependencies: [
       {
         target: "TimelockableFacet",
-        relationship: "Role changes go through timelock delay",
+        relationship:
+          "grantRole and renounceRole execute only after the timelock delay",
         direction: "uses",
         type: "governance",
       },

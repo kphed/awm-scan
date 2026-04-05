@@ -179,6 +179,7 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
   await page.keyboard.press("Escape");
   await page.getByRole("tab", { name: "Lifecycle Flows" }).click();
   await page.getByRole("tab", { name: "Emergency Pause" }).click();
+  await expect(page.getByText("Unpause Queued", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Emergency Pause" }).first().click();
   await expect(
     page.locator('[data-part="title"]', { hasText: "Emergency Pause" }),
@@ -193,4 +194,11 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
         },
       ),
   ).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await page.getByRole("tab", { name: "Diamond Module Upgrade" }).click();
+  await expect(page.getByText("Upgrade Prepared", { exact: true })).toBeVisible();
+  await expect(page.getByText("Upgrade Proposed", { exact: true })).toHaveCount(
+    0,
+  );
 });
