@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 const NAV_LINKS = [
   { label: "Explorer", href: "/" },
   { label: "Architecture", href: "/architecture" },
+  { label: "Source", href: "/source" },
 ];
 
 export function isCurrentPath(pathname: string, href: string) {

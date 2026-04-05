@@ -2,13 +2,18 @@ import {
   Badge,
   Button,
   Card,
+  Collapsible,
   HStack,
+  Link,
   Separator,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useMemo, useState } from "react";
+import { LuChevronDown } from "react-icons/lu";
 import type { ArchitectureData, ArchitectureFacet } from "@/lib/contracts";
+import { buildSourceExplorerHref } from "@/lib/contracts";
 import { useDependencyHighlight } from "@/hooks/use-dependency-highlight";
 
 interface DependencyViewProps {
@@ -165,29 +170,35 @@ const DependencyView = ({ data, onSelectFacet }: DependencyViewProps) => {
                   return (
                     <Card.Root
                       key={facet.name}
-                      as="button"
-                      textAlign="left"
                       borderWidth="1px"
                       borderColor={borderColor}
                       bg={isSelected ? "bg.subtle" : "bg.panel"}
                       shadow={isSelected || isConnected ? "sm" : "xs"}
                       transition="border-color 0.2s ease, background 0.2s ease"
-                      onClick={() =>
-                        setFocusedFacetName((current) =>
-                          current === facet.name ? null : facet.name,
-                        )
-                      }
                     >
                       <Card.Body>
                         <Stack gap="3">
                           <HStack justify="space-between" align="start" gap="3">
                             <Stack gap="1" align="start">
-                              <Badge
-                                colorPalette={facet.colorPalette}
-                                variant="surface"
+                              <Button
+                                variant="ghost"
+                                justifyContent="flex-start"
+                                height="auto"
+                                px="0"
+                                py="0"
+                                onClick={() =>
+                                  setFocusedFacetName((current) =>
+                                    current === facet.name ? null : facet.name,
+                                  )
+                                }
                               >
-                                {facet.displayName}
-                              </Badge>
+                                <Badge
+                                  colorPalette={facet.colorPalette}
+                                  variant="surface"
+                                >
+                                  {facet.displayName}
+                                </Badge>
+                              </Button>
                               <Text
                                 color="fg.muted"
                                 fontFamily="var(--font-geist-mono)"
@@ -209,33 +220,132 @@ const DependencyView = ({ data, onSelectFacet }: DependencyViewProps) => {
                               <Separator />
                               <Stack gap="2">
                                 {facetRelationships.map((relationship) => (
-                                  <HStack
-                                    key={`${facet.name}-${relationship.direction}-${relationship.source}`}
-                                    align="start"
+                                  <Stack
+                                    key={`${facet.name}-${relationship.direction}-${relationship.source}-${relationship.relationship}`}
                                     gap="2"
-                                    flexWrap="wrap"
+                                    borderWidth="1px"
+                                    borderColor="border.subtle"
+                                    borderRadius="lg"
+                                    bg="bg.canvas"
+                                    p="3"
                                   >
-                                    <Badge
-                                      colorPalette={
-                                        relationship.direction === "uses"
-                                          ? "green"
-                                          : "orange"
-                                      }
-                                      variant="subtle"
+                                    <HStack
+                                      align="start"
+                                      gap="2"
+                                      flexWrap="wrap"
                                     >
-                                      {relationship.direction === "uses"
-                                        ? "Selected uses this"
-                                        : "Uses selected"}
-                                    </Badge>
-                                    {relationship.type ? (
-                                      <Badge variant="outline">
-                                        {relationship.type}
+                                      <Badge
+                                        colorPalette={
+                                          relationship.direction === "uses"
+                                            ? "green"
+                                            : "orange"
+                                        }
+                                        variant="subtle"
+                                      >
+                                        {relationship.direction === "uses"
+                                          ? "Selected uses this"
+                                          : "Uses selected"}
                                       </Badge>
+                                      {relationship.type ? (
+                                        <Badge variant="outline">
+                                          {relationship.type}
+                                        </Badge>
+                                      ) : null}
+                                      <Text color="fg.muted" fontSize="sm">
+                                        {relationship.relationship}
+                                      </Text>
+                                    </HStack>
+
+                                    {relationship.proof ? (
+                                      <Collapsible.Root unmountOnExit>
+                                        <Collapsible.Trigger
+                                          display="flex"
+                                          justifyContent="space-between"
+                                          alignItems="center"
+                                          width="full"
+                                          borderWidth="1px"
+                                          borderColor="border.subtle"
+                                          borderRadius="md"
+                                          px="3"
+                                          py="2"
+                                        >
+                                          <Text fontSize="sm">
+                                            Proof snippet
+                                          </Text>
+                                          <Collapsible.Indicator
+                                            transition="transform 0.2s ease"
+                                            _open={{
+                                              transform: "rotate(180deg)",
+                                            }}
+                                          >
+                                            <LuChevronDown />
+                                          </Collapsible.Indicator>
+                                        </Collapsible.Trigger>
+                                        <Collapsible.Content>
+                                          <Stack gap="2" pt="3">
+                                            <Text
+                                              color="fg.muted"
+                                              fontSize="sm"
+                                            >
+                                              {relationship.proof.explanation}
+                                            </Text>
+                                            <Card.Root
+                                              borderWidth="1px"
+                                              borderColor="border.subtle"
+                                              bg="bg.panel"
+                                            >
+                                              <Card.Body>
+                                                <Stack gap="2">
+                                                  <Text
+                                                    color="fg.muted"
+                                                    fontSize="sm"
+                                                  >
+                                                    {
+                                                      relationship.proof
+                                                        .filePath
+                                                    }
+                                                    :L
+                                                    {
+                                                      relationship.proof
+                                                        .startLine
+                                                    }
+                                                    -
+                                                    {relationship.proof.endLine}
+                                                  </Text>
+                                                  <Text
+                                                    fontFamily="var(--font-geist-mono)"
+                                                    fontSize="xs"
+                                                    whiteSpace="pre-wrap"
+                                                  >
+                                                    {relationship.proof.snippet}
+                                                  </Text>
+                                                  <Link
+                                                    as={NextLink}
+                                                    href={buildSourceExplorerHref(
+                                                      relationship.proof
+                                                        .filePath,
+                                                      {
+                                                        start:
+                                                          relationship.proof
+                                                            .startLine,
+                                                        end: relationship.proof
+                                                          .endLine,
+                                                      },
+                                                    )}
+                                                    fontSize="sm"
+                                                    textDecoration="underline"
+                                                    textUnderlineOffset="0.2em"
+                                                  >
+                                                    Open in Source Explorer
+                                                  </Link>
+                                                </Stack>
+                                              </Card.Body>
+                                            </Card.Root>
+                                          </Stack>
+                                        </Collapsible.Content>
+                                      </Collapsible.Root>
                                     ) : null}
-                                    <Text color="fg.muted" fontSize="sm">
-                                      {relationship.relationship}
-                                    </Text>
-                                  </HStack>
+                                  </Stack>
                                 ))}
                               </Stack>
                             </>

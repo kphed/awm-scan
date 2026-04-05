@@ -1,0 +1,303 @@
+{
+  "LibFactBase": {
+    "libraryName": "LibFactBase",
+    "filePath": "libraries/LibFactBase.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "ManagedAccountFacet",
+        "displayName": "Account Controls",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "TimelockableFacet",
+        "displayName": "Governance Timelock",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "BurnableFacet",
+        "displayName": "Immediate Redemptions",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "BurnRespondableFacet",
+        "displayName": "Redemption Approval",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "BurnPreparableFacet",
+        "displayName": "Redemption Intake",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "TokenMetadataFacet",
+        "displayName": "Token Identity",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      },
+      {
+        "facetName": "StopCodesFacet",
+        "displayName": "Transfer Restrictions",
+        "usageSummary": "Reads and writes shared request and protocol-base records."
+      }
+    ]
+  },
+  "LibMintable": {
+    "libraryName": "LibMintable",
+    "filePath": "libraries/LibMintable.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Creates mint requests and updates shared ERC-20 supply state."
+      }
+    ]
+  },
+  "LibManagedToken": {
+    "libraryName": "LibManagedToken",
+    "filePath": "libraries/LibManagedToken.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Reads or updates the fund token's active-state controls."
+      }
+    ]
+  },
+  "LibManagedAccount": {
+    "libraryName": "LibManagedAccount",
+    "filePath": "libraries/LibManagedAccount.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "ManagedAccountFacet",
+        "displayName": "Account Controls",
+        "usageSummary": "Reads or mutates investor-account status and account-level restrictions."
+      },
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Reads or mutates investor-account status and account-level restrictions."
+      }
+    ]
+  },
+  "LibAccessControl": {
+    "libraryName": "LibAccessControl",
+    "filePath": "libraries/LibAccessControl.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "ManagedAccountFacet",
+        "displayName": "Account Controls",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "TimelockableFacet",
+        "displayName": "Governance Timelock",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "BurnableFacet",
+        "displayName": "Immediate Redemptions",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "BurnRespondableFacet",
+        "displayName": "Redemption Approval",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "BurnPreparableFacet",
+        "displayName": "Redemption Intake",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "TokenMetadataFacet",
+        "displayName": "Token Identity",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      },
+      {
+        "facetName": "StopCodesFacet",
+        "displayName": "Transfer Restrictions",
+        "usageSummary": "Enforces role checks through facet modifiers and role-administration calls."
+      }
+    ]
+  },
+  "LibPausable": {
+    "libraryName": "LibPausable",
+    "filePath": "libraries/LibPausable.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "ManagedAccountFacet",
+        "displayName": "Account Controls",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "BurnableFacet",
+        "displayName": "Immediate Redemptions",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "BurnRespondableFacet",
+        "displayName": "Redemption Approval",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "BurnPreparableFacet",
+        "displayName": "Redemption Intake",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "MintableFacet",
+        "displayName": "Subscription Processing",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "TokenMetadataFacet",
+        "displayName": "Token Identity",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      },
+      {
+        "facetName": "StopCodesFacet",
+        "displayName": "Transfer Restrictions",
+        "usageSummary": "Reads or mutates the shared pause rail that gates token operations."
+      }
+    ]
+  },
+  "LibBurnable": {
+    "libraryName": "LibBurnable",
+    "filePath": "libraries/LibBurnable.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "BurnableFacet",
+        "displayName": "Immediate Redemptions",
+        "usageSummary": "Burns reduce ERC-20 supply and balances"
+      }
+    ]
+  },
+  "LibBurnRequestable": {
+    "libraryName": "LibBurnRequestable",
+    "filePath": "libraries/LibBurnRequestable.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "BurnRespondableFacet",
+        "displayName": "Redemption Approval",
+        "usageSummary": "Stages, approves, or rejects queued burn requests and settlement state."
+      },
+      {
+        "facetName": "BurnPreparableFacet",
+        "displayName": "Redemption Intake",
+        "usageSummary": "Stages, approves, or rejects queued burn requests and settlement state."
+      }
+    ]
+  },
+  "LibStopCodes": {
+    "libraryName": "LibStopCodes",
+    "filePath": "libraries/LibStopCodes.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "ERC20FacetTransferBurnableStoppable",
+        "displayName": "Token Transfers",
+        "usageSummary": "Reads per-account stop codes before allowing transfers or burner-address redemptions."
+      },
+      {
+        "facetName": "StopCodesFacet",
+        "displayName": "Transfer Restrictions",
+        "usageSummary": "Reads per-account stop codes before allowing transfers or burner-address redemptions."
+      }
+    ]
+  },
+  "LibTokenMetadata": {
+    "libraryName": "LibTokenMetadata",
+    "filePath": "libraries/LibTokenMetadata.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "TokenMetadataFacet",
+        "displayName": "Token Identity",
+        "usageSummary": "Reads and updates the shared token metadata record."
+      }
+    ]
+  },
+  "LibTimelockable": {
+    "libraryName": "LibTimelockable",
+    "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "PausableFacetTimelockable",
+        "displayName": "Emergency Pause",
+        "usageSummary": "Queues and executes delayed governance actions through the timelock."
+      },
+      {
+        "facetName": "TimelockableFacet",
+        "displayName": "Governance Timelock",
+        "usageSummary": "Queues and executes delayed governance actions through the timelock."
+      },
+      {
+        "facetName": "ERC173FacetTimelockable",
+        "displayName": "Ownership Controls",
+        "usageSummary": "Queues and executes delayed governance actions through the timelock."
+      },
+      {
+        "facetName": "AccessControlFacetTimelockable",
+        "displayName": "Role Administration",
+        "usageSummary": "Queues and executes delayed governance actions through the timelock."
+      },
+      {
+        "facetName": "ManagedTokenFacetTimelockable",
+        "displayName": "Token Status Controls",
+        "usageSummary": "Queues and executes delayed governance actions through the timelock."
+      }
+    ]
+  },
+  "LibDiamond": {
+    "libraryName": "LibDiamond",
+    "filePath": "libraries/LibDiamond.sol",
+    "compilerProfile": "default",
+    "solcVersion": "0.8.26",
+    "usages": [
+      {
+        "facetName": "DiamondLoupeFacet",
+        "displayName": "Contract Inspector",
+        "usageSummary": "Owns diamond-cut state, facet selectors, and loupe/introspection data."
+      },
+      {
+        "facetName": "ERC165Facet",
+        "displayName": "Interface Registry",
+        "usageSummary": "Owns diamond-cut state, facet selectors, and loupe/introspection data."
+      },
+      {
+        "facetName": "DiamondCutFacet",
+        "displayName": "Module Upgrades",
+        "usageSummary": "Owns diamond-cut state, facet selectors, and loupe/introspection data."
+      }
+    ]
+  }
+}

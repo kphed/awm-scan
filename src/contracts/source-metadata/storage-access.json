@@ -1,0 +1,387 @@
+{
+  "MintableFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibERC20",
+      "filePath": "libraries/LibERC20.sol",
+      "structName": "ERC20Storage",
+      "fields": [
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        },
+        {
+          "name": "_balances",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibFactBase",
+      "filePath": "libraries/LibFactBase.sol",
+      "structName": "FactTokenStorage",
+      "fields": [
+        {
+          "name": "_requests",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibManagedAccount",
+      "filePath": "libraries/LibManagedAccount.sol",
+      "structName": "ManagedAccountStorage",
+      "fields": [
+        {
+          "name": "_isBlockList",
+          "access": "read"
+        },
+        {
+          "name": "_accountList",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "BurnableFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibERC20",
+      "filePath": "libraries/LibERC20.sol",
+      "structName": "ERC20Storage",
+      "fields": [
+        {
+          "name": "_balances",
+          "access": "read"
+        },
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibFactBase",
+      "filePath": "libraries/LibFactBase.sol",
+      "structName": "FactTokenStorage",
+      "fields": [
+        {
+          "name": "_requests",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "BurnPreparableFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibBurnRequestable",
+      "filePath": "libraries/LibBurnRequestable.sol",
+      "structName": "BurnRequestableStorage",
+      "fields": [
+        {
+          "name": "_balances",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibERC20",
+      "filePath": "libraries/LibERC20.sol",
+      "structName": "ERC20Storage",
+      "fields": [
+        {
+          "name": "_balances",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "BurnRespondableFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibBurnRequestable",
+      "filePath": "libraries/LibBurnRequestable.sol",
+      "structName": "BurnRequestableStorage",
+      "fields": [
+        {
+          "name": "_requests",
+          "access": "read"
+        },
+        {
+          "name": "_balances",
+          "access": "read"
+        },
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibERC20",
+      "filePath": "libraries/LibERC20.sol",
+      "structName": "ERC20Storage",
+      "fields": [
+        {
+          "name": "_balances",
+          "access": "read"
+        },
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibFactBase",
+      "filePath": "libraries/LibFactBase.sol",
+      "structName": "FactTokenStorage",
+      "fields": [
+        {
+          "name": "_requests",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "ERC20FacetTransferBurnableStoppable": [
+    {
+      "libraryName": "LibStopCodes",
+      "filePath": "libraries/LibStopCodes.sol",
+      "structName": "StopCodesStorage",
+      "fields": [
+        {
+          "name": "_stopCodes",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "TokenMetadataFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibTokenMetadata",
+      "filePath": "libraries/LibTokenMetadata.sol",
+      "structName": "TokenMetadataStorage",
+      "fields": [
+        {
+          "name": "_metadata",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "ManagedTokenFacetTimelockable": [
+    {
+      "libraryName": "LibTimelockable",
+      "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+      "structName": "TimelockStorage",
+      "fields": [
+        {
+          "name": "_queuedTransactions",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "ManagedAccountFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibERC20",
+      "filePath": "libraries/LibERC20.sol",
+      "structName": "ERC20Storage",
+      "fields": [
+        {
+          "name": "_balances",
+          "access": "read"
+        },
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibManagedAccount",
+      "filePath": "libraries/LibManagedAccount.sol",
+      "structName": "ManagedAccountStorage",
+      "fields": [
+        {
+          "name": "_isBlockList",
+          "access": "read"
+        },
+        {
+          "name": "_accountList",
+          "access": "read"
+        },
+        {
+          "name": "_lockBalances",
+          "access": "read"
+        },
+        {
+          "name": "_balances",
+          "access": "read"
+        },
+        {
+          "name": "_totalSupply",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "StopCodesFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibStopCodes",
+      "filePath": "libraries/LibStopCodes.sol",
+      "structName": "StopCodesStorage",
+      "fields": [
+        {
+          "name": "_stopCodes",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "ERC173FacetTimelockable": [
+    {
+      "libraryName": "LibTimelockable",
+      "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+      "structName": "TimelockStorage",
+      "fields": [
+        {
+          "name": "_queuedTransactions",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "AccessControlFacetTimelockable": [
+    {
+      "libraryName": "LibTimelockable",
+      "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+      "structName": "TimelockStorage",
+      "fields": [
+        {
+          "name": "_queuedTransactions",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "TimelockableFacet": [
+    {
+      "libraryName": "LibAccessControl",
+      "filePath": "libraries/LibAccessControl.sol",
+      "structName": "AccessControlStorage",
+      "fields": [
+        {
+          "name": "_roles",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "libraryName": "LibTimelockable",
+      "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+      "structName": "TimelockStorage",
+      "fields": [
+        {
+          "name": "_queuedTransactions",
+          "access": "read"
+        },
+        {
+          "name": "_timelockDelay",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "PausableFacetTimelockable": [
+    {
+      "libraryName": "LibTimelockable",
+      "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+      "structName": "TimelockStorage",
+      "fields": [
+        {
+          "name": "_queuedTransactions",
+          "access": "read"
+        }
+      ]
+    }
+  ],
+  "DiamondCutFacet": [],
+  "DiamondLoupeFacet": [],
+  "ERC165Facet": []
+}

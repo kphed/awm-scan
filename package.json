@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "bun scripts/extractSourceMetadata.ts && next build",
     "start": "next start",
     "lint": "tsc -p ./tsconfig.lint.json --noEmit && bunx eslint 'src/**/*.{ts,tsx}' && bunx prettier 'src/**/*.{ts,tsx}' --check",
     "format": "bunx prettier 'src/**/*.{ts,tsx}' --write",
     "test": "bun test",
+    "contracts:source-metadata": "bun scripts/extractSourceMetadata.ts",
     "test:e2e": "bunx playwright test",
     "test:e2e:accept": "bunx playwright test --update-snapshots",
     "test:e2e:update": "bun run test:e2e:accept && bun run test:e2e"
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
+    "@solidity-parser/parser": "^0.20.2",
     "@types/bun": "^1.3.11",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -33,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "prettier": "^3.8.1",
+    "shiki": "^4.0.2",
     "typescript": "^5"
   }
 }

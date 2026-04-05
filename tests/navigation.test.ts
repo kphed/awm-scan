@@ -12,4 +12,12 @@ describe("navigation route matching", () => {
     expect(isCurrentPath("/architecture/details", "/architecture")).toBe(true);
     expect(isCurrentPath("/explorer", "/architecture")).toBe(false);
   });
+
+  test("keeps source explorer nav active for deep-linked files", () => {
+    expect(isCurrentPath("/source", "/source")).toBe(true);
+    expect(isCurrentPath("/source/facets/MintableFacet.sol", "/source")).toBe(
+      true,
+    );
+    expect(isCurrentPath("/architecture", "/source")).toBe(false);
+  });
 });

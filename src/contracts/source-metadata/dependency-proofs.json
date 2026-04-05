@@ -1,0 +1,93 @@
+{
+  "MintableFacet": {
+    "ERC20FacetTransferBurnableStoppable": {
+      "filePath": "libraries/LibMintable.sol",
+      "startLine": 10,
+      "endLine": 24,
+      "snippet": "  function _mint(bytes32 requestId_, address requester_, uint256 amount_) internal {\n    bytes32 internalRequestId = LibFactBase._generateID(requestId_, requester_);\n    require(\n      LibFactBase.ref()._requests[internalRequestId].requestStatus == LibFactBase.RequestStatus.UNINITIALIZED,\n      \"FACT0002\"\n    );\n    require(requester_ != address(0), \"FACT0801\");\n    require(amount_ > 0, \"FACT0800\");\n\n    _createMintRequest(requester_, msg.sender, amount_, internalRequestId);\n    LibERC20.ref()._totalSupply += amount_;\n    LibERC20.ref()._balances[requester_] += amount_;\n    emit Mint(requestId_, requester_, msg.sender, amount_);\n    emit LibERC20.Transfer(address(0), requester_, amount_);\n  }",
+      "explanation": "Minted tokens become ERC-20 balances"
+    }
+  },
+  "BurnableFacet": {
+    "ERC20FacetTransferBurnableStoppable": {
+      "filePath": "libraries/LibBurnable.sol",
+      "startLine": 10,
+      "endLine": 26,
+      "snippet": "  function _burn(bytes32 requestId_, address requester_, uint256 amount_) internal {\n    bytes32 internalRequestId = LibFactBase._generateID(requestId_, requester_);\n    require(\n      LibFactBase.ref()._requests[internalRequestId].requestStatus == LibFactBase.RequestStatus.UNINITIALIZED,\n      \"FACT0002\"\n    );\n    require(requester_ != address(0), \"FACT0901\");\n    require(amount_ > 0, \"FACT0900\");\n    require(amount_ <= LibERC20.ref()._balances[requester_], \"FACT0902\");\n\n    _createBurnRequest(requester_, msg.sender, amount_, internalRequestId);\n    LibERC20.ref()._totalSupply -= amount_;\n    LibERC20.ref()._balances[requester_] -= amount_;\n\n    emit Burn(requestId_, requester_, msg.sender, amount_);\n    emit LibERC20.Transfer(requester_, address(0), amount_);\n  }",
+      "explanation": "Burns reduce ERC-20 supply and balances"
+    }
+  },
+  "BurnPreparableFacet": {
+    "ERC20FacetTransferBurnableStoppable": {
+      "filePath": "libraries/LibBurnRequestable.sol",
+      "startLine": 84,
+      "endLine": 99,
+      "snippet": "  function _approveBurn(bytes32 requestId_, address requester_) internal {\n    bytes32 internalRequestId = LibFactBase._generateID(requestId_, requester_);\n    LibFactBase.Request memory request = LibFactBase._getRequest(internalRequestId);\n    require(request.requester == requester_, \"FACT0701\");\n    require(request.requestStatus == LibFactBase.RequestStatus.PENDING, \"FACT0701\");\n    require(request.requestType == LibFactBase.RequestType.BURN, \"FACT0709\");\n    request.responder = msg.sender;\n    request.requestStatus = LibFactBase.RequestStatus.APPROVED;\n\n    LibFactBase.ref()._requests[request.requestId] = request;\n    LibERC20.ref()._balances[request.burnFrom] -= request.amount;\n    LibERC20.ref()._totalSupply -= request.amount;\n\n    emit BurnApproved(requestId_, request.requester, request.responder, request.burnFrom, request.amount);\n    emit LibERC20.Transfer(request.burnFrom, address(0), request.amount);\n  }",
+      "explanation": "Preparing a burn moves the requested balance into the burner account while the request stays pending"
+    }
+  },
+  "BurnRespondableFacet": {
+    "ERC20FacetTransferBurnableStoppable": {
+      "filePath": "libraries/LibBurnRequestable.sol",
+      "startLine": 84,
+      "endLine": 99,
+      "snippet": "  function _approveBurn(bytes32 requestId_, address requester_) internal {\n    bytes32 internalRequestId = LibFactBase._generateID(requestId_, requester_);\n    LibFactBase.Request memory request = LibFactBase._getRequest(internalRequestId);\n    require(request.requester == requester_, \"FACT0701\");\n    require(request.requestStatus == LibFactBase.RequestStatus.PENDING, \"FACT0701\");\n    require(request.requestType == LibFactBase.RequestType.BURN, \"FACT0709\");\n    request.responder = msg.sender;\n    request.requestStatus = LibFactBase.RequestStatus.APPROVED;\n\n    LibFactBase.ref()._requests[request.requestId] = request;\n    LibERC20.ref()._balances[request.burnFrom] -= request.amount;\n    LibERC20.ref()._totalSupply -= request.amount;\n\n    emit BurnApproved(requestId_, request.requester, request.responder, request.burnFrom, request.amount);\n    emit LibERC20.Transfer(request.burnFrom, address(0), request.amount);\n  }",
+      "explanation": "Approved or rejected staged burns mutate shared ERC-20 balances and supply"
+    }
+  },
+  "ERC20FacetTransferBurnableStoppable": {
+    "StopCodesFacet": {
+      "filePath": "facets/ERC20FacetTransferBurnableStoppable.sol",
+      "startLine": 10,
+      "endLine": 22,
+      "snippet": "  modifier onlyNotStopped(address fromAccount, address toAccount) {\n    StopCodes memory senderStopCodes = LibStopCodes._getStopCodes(fromAccount);\n    StopCodes memory toStopCodes = LibStopCodes._getStopCodes(toAccount);\n\n    if (_isBurner(toAccount)) {\n      require(!senderStopCodes.stopRedemptionFrom, \"RSTR0000\");\n      _;\n    } else {\n      require(!senderStopCodes.stopTransferFrom, \"RSTR0002\");\n      require(!toStopCodes.stopTransferTo, \"RSTR0003\");\n      _;\n    }\n  }",
+      "explanation": "Reads per-account stop codes before allowing transfers"
+    }
+  },
+  "ManagedTokenFacetTimelockable": {
+    "TimelockableFacet": {
+      "filePath": "facets/extensions/timelock/ManagedTokenFacetTimelockable.sol",
+      "startLine": 15,
+      "endLine": 20,
+      "snippet": "  function activateToken() public virtual override returns (bool success_) {\n    bytes4 selector = bytes4(msg.data[:4]);\n    bytes calldata data = msg.data[4:];\n    LibTimelockable._executeTransaction(selector, data, msg.sender);\n    success_ = super.activateToken();\n  }",
+      "explanation": "activateToken executes only after a queued timelock transaction"
+    }
+  },
+  "ManagedAccountFacet": {
+    "ERC20FacetTransferBurnableStoppable": {
+      "filePath": "libraries/LibManagedAccount.sol",
+      "startLine": 170,
+      "endLine": 178,
+      "snippet": "  function _forceBurn(address owner_, uint256 amount_) internal {\n    require(owner_ != address(0), \"FACT0205\");\n    require(amount_ > 0, \"FACT0206\");\n    require(ref()._lockBalances[owner_] >= amount_, \"FACT0202\");\n    ref()._lockBalances[owner_] -= amount_;\n    LibERC20.ref()._totalSupply -= amount_;\n    emit ForceBurned(msg.sender, owner_, amount_);\n    emit LibERC20.Transfer(LOCK_ADDRESS, address(0), amount_);\n  }",
+      "explanation": "Locks, force-transfers, and forced burns mutate the shared ERC-20 ledger"
+    }
+  },
+  "ERC173FacetTimelockable": {
+    "TimelockableFacet": {
+      "filePath": "facets/extensions/timelock/ERC173FacetTimelockable.sol",
+      "startLine": 15,
+      "endLine": 20,
+      "snippet": "  function transferOwnership(address _newOwner) public virtual override {\n    bytes4 selector = bytes4(msg.data[:4]);\n    bytes calldata data = msg.data[4:];\n    LibTimelockable._executeTransaction(selector, data, msg.sender);\n    super.transferOwnership(_newOwner);\n  }",
+      "explanation": "Ownership transfers go through timelock delay"
+    }
+  },
+  "AccessControlFacetTimelockable": {
+    "TimelockableFacet": {
+      "filePath": "facets/extensions/timelock/AccessControlFacetTimelockable.sol",
+      "startLine": 14,
+      "endLine": 19,
+      "snippet": "  function renounceRole(bytes32 role, address callerConfirmation) public virtual override returns (bool success_) {\n    bytes4 selector = bytes4(msg.data[:4]);\n    bytes calldata data = msg.data[4:];\n    LibTimelockable._executeTransaction(selector, data, msg.sender);\n    success_ = super.renounceRole(role, callerConfirmation);\n  }",
+      "explanation": "grantRole and renounceRole execute only after the timelock delay"
+    }
+  },
+  "PausableFacetTimelockable": {
+    "TimelockableFacet": {
+      "filePath": "facets/extensions/timelock/PausableFacetTimelockable.sol",
+      "startLine": 15,
+      "endLine": 20,
+      "snippet": "  function unpause() public virtual override {\n    bytes4 selector = bytes4(msg.data[:4]);\n    bytes calldata data = msg.data[4:];\n    LibTimelockable._executeTransaction(selector, data, msg.sender);\n    super.unpause();\n  }",
+      "explanation": "unpause executes only after the timelock delay"
+    }
+  },
+  "DiamondCutFacet": {}
+}

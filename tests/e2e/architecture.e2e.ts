@@ -36,6 +36,9 @@ test("architecture page renders progressive disclosure without browser errors", 
     page.getByRole("tab", { name: "Lifecycle Flows" }),
   ).toBeVisible();
   await expect(
+    page.getByRole("tab", { name: "Shared Libraries" }),
+  ).toBeVisible();
+  await expect(
     page.getByText(
       "splits the contract's functionality across multiple modules",
     ),
@@ -64,12 +67,23 @@ test("architecture page renders progressive disclosure without browser errors", 
   await page.getByRole("button", { name: "Subscription Processing" }).click();
 
   await page.getByRole("button", { name: "Write Operations" }).click();
-  await expect(
-    page.getByText("mint(bytes32,address,uint256)", { exact: true }),
-  ).toBeVisible();
-  await page
+  const mintMethodTrigger = page
     .getByText("mint(bytes32,address,uint256)", { exact: true })
-    .click();
+    .first();
+  await expect(mintMethodTrigger).toBeVisible();
+  await mintMethodTrigger.click();
+  await expect(
+    page.getByText(
+      "Creates a request to mint tokens to the requester address",
+      { exact: false },
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText("MUST revert if contract is paused").first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open in Source Explorer" }).first(),
+  ).toBeVisible();
   await expect(
     page.getByText(
       "Creates new fund tokens for an investor after subscription capital clears.",
@@ -83,6 +97,11 @@ test("architecture page renders progressive disclosure without browser errors", 
   await expect(
     page.getByText("No description available.").first(),
   ).toBeVisible();
+  await page.getByRole("button", { name: "Role Enforcement" }).click();
+  await expect(
+    page.getByLabel("Role Enforcement").getByText("whenNotPaused").first(),
+  ).toBeVisible();
+  await expect(page.getByText("Storage Access")).toBeVisible();
 
   await page.getByRole("tab", { name: "Permission Matrix" }).click();
   await expect(
@@ -128,10 +147,24 @@ test("architecture page renders progressive disclosure without browser errors", 
   await expect(
     page.getByRole("button", { name: "Clear dependency filter" }),
   ).toBeVisible();
+  await page.getByText("Proof snippet", { exact: false }).first().click();
+  await expect(
+    page.getByText("LibERC20.ref()._totalSupply", { exact: false }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Token Status Controls" }),
   ).toHaveCount(0);
   await page.keyboard.press("Escape");
+
+  await page.getByRole("tab", { name: "Shared Libraries" }).click();
+  await expect(page.getByText("LibAccessControl", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /LibAccessControl/i }).click();
+  await expect(
+    page.getByText("MintableFacet", { exact: false }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open in Source Explorer" }).first(),
+  ).toBeVisible();
 
   await page.getByRole("tab", { name: "Lifecycle Flows" }).click();
   await page
@@ -164,6 +197,34 @@ test("architecture page renders progressive disclosure without browser errors", 
 
   expect(pageErrors).toEqual([]);
   expect(consoleErrors).toEqual([]);
+});
+
+test("source explorer renders file navigation and deep-linked line context", async ({
+  page,
+}) => {
+  await page.goto("/source/facets/MintableFacet.sol?line=49-65");
+
+  await expect(page.getByRole("link", { name: "Source" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(
+    page.getByRole("heading", { name: "MONY Source Explorer" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "MintableFacet.sol" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Solidity 0.8.26", { exact: false }).first(),
+  ).toBeVisible();
+  await expect(page.getByText("Ln 49-65", { exact: false })).toBeVisible();
+  await expect(
+    page.getByText("whenNotPaused", { exact: false }).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Open on Etherscan/i }),
+  ).toBeVisible();
+  await expect(page.getByPlaceholder("Search source files")).toBeVisible();
 });
 
 test("architecture page keeps the mobile drawer working from expansion tabs", async ({

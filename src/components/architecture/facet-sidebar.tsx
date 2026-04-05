@@ -13,6 +13,7 @@ import type { ArchitectureFacet } from "@/lib/contracts";
 import { eipToUrl, truncateAddress } from "@/lib/format";
 import EventList from "./event-list";
 import MethodList from "./method-list";
+import ModifierChain from "./modifier-chain";
 import SourceViewer from "./source-viewer";
 
 interface FacetSidebarProps {
@@ -20,6 +21,10 @@ interface FacetSidebarProps {
 }
 
 const FacetSidebar = ({ facet }: FacetSidebarProps) => {
+  const sourceFilesByPath = Object.fromEntries(
+    facet.relatedSourceFiles.map((file) => [file.path, file]),
+  );
+
   return (
     <Stack gap="6">
       <Stack gap="4">
@@ -141,6 +146,8 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
               <MethodList
                 methods={facet.readMethods}
                 emptyLabel="No read operations defined."
+                sourceBySignature={facet.methodSource}
+                sourceFilesByPath={sourceFilesByPath}
               />
             </Accordion.ItemBody>
           </Accordion.ItemContent>
@@ -158,6 +165,25 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
               <MethodList
                 methods={facet.writeMethods}
                 emptyLabel="No write operations defined."
+                sourceBySignature={facet.methodSource}
+                sourceFilesByPath={sourceFilesByPath}
+              />
+            </Accordion.ItemBody>
+          </Accordion.ItemContent>
+        </Accordion.Item>
+
+        <Accordion.Item value="role-enforcement">
+          <Accordion.ItemTrigger>
+            <Box flex="1" textAlign="start" fontWeight="medium">
+              Role Enforcement
+            </Box>
+            <Accordion.ItemIndicator />
+          </Accordion.ItemTrigger>
+          <Accordion.ItemContent>
+            <Accordion.ItemBody>
+              <ModifierChain
+                methods={[...facet.writeMethods, ...facet.readMethods]}
+                methodSource={facet.methodSource}
               />
             </Accordion.ItemBody>
           </Accordion.ItemContent>
@@ -177,6 +203,62 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
           </Accordion.ItemContent>
         </Accordion.Item>
 
+        <Accordion.Item value="storage-access">
+          <Accordion.ItemTrigger>
+            <Box flex="1" textAlign="start" fontWeight="medium">
+              Storage Access
+            </Box>
+            <Accordion.ItemIndicator />
+          </Accordion.ItemTrigger>
+          <Accordion.ItemContent>
+            <Accordion.ItemBody>
+              {facet.storageAccess.length === 0 ? (
+                <Text color="fg.muted">
+                  No library-backed storage access was extracted for this
+                  module.
+                </Text>
+              ) : (
+                <Stack gap="3">
+                  {facet.storageAccess.map((access) => (
+                    <Box
+                      key={`${access.libraryName}-${access.structName}`}
+                      borderWidth="1px"
+                      borderColor="border.subtle"
+                      borderRadius="lg"
+                      bg="bg.panel"
+                      p="4"
+                    >
+                      <Stack gap="2">
+                        <Text fontWeight="medium">{access.libraryName}</Text>
+                        <Text
+                          color="fg.muted"
+                          fontFamily="var(--font-geist-mono)"
+                          fontSize="xs"
+                        >
+                          {access.structName} • {access.filePath}
+                        </Text>
+                        <Wrap gap="2">
+                          {access.fields.map((field) => (
+                            <Badge
+                              key={`${access.libraryName}-${field.name}`}
+                              colorPalette={
+                                field.access === "write" ? "orange" : "blue"
+                              }
+                              variant="subtle"
+                            >
+                              {field.access}: {field.name}
+                            </Badge>
+                          ))}
+                        </Wrap>
+                      </Stack>
+                    </Box>
+                  ))}
+                </Stack>
+              )}
+            </Accordion.ItemBody>
+          </Accordion.ItemContent>
+        </Accordion.Item>
+
         <Accordion.Item value="source-code">
           <Accordion.ItemTrigger>
             <Box flex="1" textAlign="start" fontWeight="medium">
@@ -186,7 +268,13 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
             <Accordion.ItemBody>
-              <SourceViewer facetName={facet.name} />
+              <SourceViewer
+                files={facet.relatedSourceFiles}
+                initialFilePath={
+                  Object.values(facet.methodSource)[0]?.filePath ??
+                  facet.relatedSourceFiles[0]?.path
+                }
+              />
             </Accordion.ItemBody>
           </Accordion.ItemContent>
         </Accordion.Item>

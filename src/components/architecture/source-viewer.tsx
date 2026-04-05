@@ -1,14 +1,28 @@
-import { Box, Code, Stack, Text } from "@chakra-ui/react";
-import { getFacetSourceCode } from "@/lib/contracts";
+"use client";
+
+import { Stack, Tabs, Text } from "@chakra-ui/react";
+import { useState } from "react";
+import type { LineRange, SourceFileRecord } from "@/lib/contracts";
+import CodeViewer from "@/components/source-explorer/code-viewer";
 
 interface SourceViewerProps {
-  facetName: string;
+  files: SourceFileRecord[];
+  highlightRange?: LineRange | null;
+  initialFilePath?: string;
 }
 
-const SourceViewer = ({ facetName }: SourceViewerProps) => {
-  const sourceCode = getFacetSourceCode(facetName);
+const SourceViewer = ({
+  files,
+  highlightRange,
+  initialFilePath,
+}: SourceViewerProps) => {
+  const [selectedPath, setSelectedPath] = useState(
+    initialFilePath ?? files[0]?.path ?? "",
+  );
+  const selectedFile =
+    files.find((file) => file.path === selectedPath) ?? files[0] ?? null;
 
-  if (!sourceCode) {
+  if (!selectedFile) {
     return (
       <Text color="fg.muted">
         Source code is unavailable for this module right now.
@@ -17,27 +31,38 @@ const SourceViewer = ({ facetName }: SourceViewerProps) => {
   }
 
   return (
-    <Stack gap="3">
+    <Stack gap="4">
       <Text color="fg.muted" fontSize="sm">
-        Primary source file extracted from the verified Etherscan payload.
+        Verified Solidity files related to this module, with line-numbered code
+        and direct deep links into the Source Explorer.
       </Text>
-      <Box
-        as="pre"
-        maxH="24rem"
-        overflow="auto"
-        rounded="lg"
-        borderWidth="1px"
-        borderColor="border.subtle"
-        bg="bg.panel"
-        p="4"
-        whiteSpace="pre"
-        fontSize="xs"
-        lineHeight="1.6"
+      <Tabs.Root
+        lazyMount
+        value={selectedFile.path}
+        variant="line"
+        onValueChange={(details) => setSelectedPath(details.value)}
       >
-        <Code whiteSpace="pre" display="block" bg="transparent">
-          {sourceCode}
-        </Code>
-      </Box>
+        <Tabs.List overflowX="auto" overflowY="hidden">
+          {files.map((file) => (
+            <Tabs.Trigger key={file.path} value={file.path}>
+              {file.name}
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+
+        {files.map((file) => (
+          <Tabs.Content key={file.path} value={file.path} pt="4">
+            <CodeViewer
+              file={file}
+              highlightRange={
+                file.path === selectedFile.path ? highlightRange : null
+              }
+              maxH="24rem"
+              showHeaderLink
+            />
+          </Tabs.Content>
+        ))}
+      </Tabs.Root>
     </Stack>
   );
 };

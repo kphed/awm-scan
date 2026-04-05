@@ -1,0 +1,570 @@
+{
+  "AccessControlFacetTimelockable": {
+    "grantRole(bytes32,address)": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    },
+    "renounceRole(bytes32,address)": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    }
+  },
+  "BurnableFacet": {
+    "burn(bytes32,address,uint256)": {
+      "notice": "Creates a request to burn some from tokens the sender address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if request is already initialized with requestId_",
+        "MUST revert if msg.sender is not a Tokenization agent",
+        "MUST revert if requester_ is the zero address",
+        "MUST decrease requester_ balance",
+        "MUST decrease total supply",
+        "CAN burn when from_ is deactivated"
+      ],
+      "params": {
+        "requestId_": "id for the request to be created",
+        "requester_": "address for which request is made",
+        "amount_": "requested number of tokens to be burned"
+      },
+      "returns": {
+        "success_": "status of the request to burn (true/false)"
+      }
+    }
+  },
+  "BurnPreparableFacet": {
+    "prepareBurn(bytes32,address,address,uint256)": {
+      "notice": "Creates a request to burn some from tokens the from_ address and TRANSFERS amount_ tokens from from_",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if request is already initialized with requestId_",
+        "MUST revert if burner_ does not have BURNER role",
+        "MUST revert if from_ is the zero address",
+        "MUST decrease balance",
+        "MUST NOT decrease total supply",
+        "CAN prepare burn when from_ is deactivated"
+      ],
+      "params": {
+        "requestId_": "id for the request to be created",
+        "from_": "address for which the burn request will be from",
+        "burner_": "address to which tokens are transferred to and from which tokens will be burned",
+        "amount_": "requested number of tokens to be burned"
+      },
+      "returns": {
+        "success_": "status of the request to burn (true/false)"
+      }
+    }
+  },
+  "BurnRespondableFacet": {
+    "burnRequestOf(bytes32,address)": {
+      "notice": "Query for a specific burn request",
+      "dev": [
+        "If multiple types of requests are stored together, validate that the request is for \"burn\""
+      ],
+      "params": {
+        "requestId_": "id for the burn request",
+        "requester_": "requester address for the request,"
+      },
+      "returns": {
+        "status_": "status of the burn request (pending/approved/rejected)",
+        "responder_": "responder address, 0x0 if not yet responded to",
+        "amount_": "number of tokens to be burned through this request"
+      }
+    },
+    "approveBurn(bytes32,address)": {
+      "notice": "Approves a specific request to burn some tokens from some address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have tokenization agent role",
+        "MUST revert if request with requestId_ is not in PENDING state",
+        "CAN approve when token is inactive",
+        "CAN approve when request.requestor is deactivated",
+        "MUST decrease total supply"
+      ],
+      "params": {
+        "requestId_": "id for the request to be approved",
+        "requester_": "requester address for the request,"
+      },
+      "returns": {
+        "success_": "of the approval of the request to burn (true/false)"
+      }
+    },
+    "rejectBurn(bytes32,address)": {
+      "notice": "Rejects a specific request to burn some tokens some address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have tokenization agent role",
+        "MUST revert if request with requestId_ is not in PENDING state",
+        "CAN reject when token is inactive",
+        "CAN reject when request.requestor is deactivated",
+        "MUST NOT decrease total supply"
+      ],
+      "params": {
+        "requestId_": "id for the request to be rejected",
+        "requester_": "requester address for the request,"
+      },
+      "returns": {
+        "success_": "status of the rejection of the request to burn (true/false)"
+      }
+    }
+  },
+  "DiamondCutFacet": {},
+  "DiamondLoupeFacet": {},
+  "ERC165Facet": {},
+  "ERC173FacetTimelockable": {
+    "renounceOwnership()": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    },
+    "transferOwnership(address)": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    }
+  },
+  "ERC20FacetTransferBurnableStoppable": {
+    "transfer(address,uint256)": {
+      "notice": "Transfers to burner addresses will not check the active status of the to_ account",
+      "dev": [
+        "MUST revert if to_ stopRedemptionFrom is true when to_ is a burner (burn request)",
+        "MUST revert if to_ stopTransferTo is true when to_ is not a burner (transfer)",
+        "MUST revert if msg.sender stopTransferFrom is true when to_ is not a burner (transfer)"
+      ]
+    },
+    "transferFrom(address,address,uint256)": {
+      "notice": "When transfering to burner address, updates allowance, NOT burnAllowance upon successful transferFrom",
+      "dev": [
+        "MUST revert if msg.sender stopRedemptionFrom is true when to_ is a burner (burn request)",
+        "MUST revert if msg.sender stopTransferFrom is true when to_ is not a burner (transfer)",
+        "MUST revert if to_ stopTransferTo is true when to_ is not a burner (transfer)"
+      ]
+    }
+  },
+  "FactTokenDiamond": {},
+  "ManagedAccountFacet": {
+    "accountActive(address)": {
+      "notice": "Queries an address's status",
+      "params": {
+        "owner_": "address of the account to be activated"
+      },
+      "returns": {
+        "active_": "status of the address (true/false)"
+      }
+    },
+    "batchAccountActive(address[])": {
+      "notice": "Queries a number of address' statuses",
+      "params": {
+        "owners_": "addresses of the accounts to be activated"
+      },
+      "returns": {
+        "actives_": "status of the addresses (true/false)"
+      }
+    },
+    "batchLockBalanceOf(address[])": {
+      "notice": "Query for the amount of tokens locked up for a number of addresses",
+      "params": {
+        "owners_": "the address of the owner of the locked balance"
+      },
+      "returns": {
+        "balances_": "number of locked tokens belonging to each address"
+      }
+    },
+    "lockBalanceOf(address)": {
+      "notice": "Query for the amount of tokens locked up for an address",
+      "params": {
+        "owner_": "the address of the owner of the locked balance"
+      },
+      "returns": {
+        "balance_": "number of locked tokens belonging to the address"
+      }
+    },
+    "activateAccount(address)": {
+      "notice": "Activate the address and enable regular business processes (e.g. sanctions lifted)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if owner_ is not active"
+      ],
+      "params": {
+        "owner_": "address of the account to be activated"
+      },
+      "returns": {
+        "success_": "status of the transaction (true/false)"
+      }
+    },
+    "batchActivateAccount(address[])": {
+      "notice": "Activate a number of addresses and enable regular business processes (e.g. sanctions lifted)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if not all owners_ are inactive",
+        "MUST revert if any activate in batch fails"
+      ],
+      "params": {
+        "owners_": "addresses of the accounts to be activated"
+      },
+      "returns": {
+        "success_": "status of the transaction (true/false)"
+      }
+    },
+    "batchDeactivateAccount(address[])": {
+      "notice": "Deactivate the address and disable regular business processes (e.g. sanctions)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if not all owners_ are active",
+        "MUST revert if any deactivate in batch fails"
+      ],
+      "params": {
+        "owners_": "addresses of the accounts to be deactivated"
+      },
+      "returns": {
+        "success_": "status of the transaction (true/false)"
+      }
+    },
+    "batchForceBurn(address[],uint256[])": {
+      "notice": "Force burn a number of tokens for each address for business reasons (e.g. default)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if any amount_ is zero",
+        "MUST revert if owner lock balance < amount_",
+        "MUST revert if any force burn in batch fails",
+        "CAN force burn when token is inactive",
+        "CAN force burn when some of owners_ are deactivated",
+        "MUST decrease total supply"
+      ],
+      "params": {
+        "owners_": "the addresses of the owners for which tokens are force burned",
+        "amounts_": "the number of tokens to be force burned for each address"
+      },
+      "returns": {
+        "success_": "status of the unlocking of the tokens (true/false)"
+      }
+    },
+    "batchForceTransfer(address[],address[],uint256[])": {
+      "notice": "Force transfer a number of tokens for each address for business reasons (e.g. default)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner lock balance < amount_",
+        "MUST revert if any force transfer in batch fails",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if any newOwner_ is zero address",
+        "MUST revert if any amount_ is zero",
+        "CAN force transfer when token is inactive",
+        "CAN force transfer when some of owners_ are deactivated",
+        "CAN force transfer when some of newOwners_ are deactivated"
+      ],
+      "params": {
+        "owners_": "the addresses of the owners for which tokens are transferred",
+        "amounts_": "the number of tokens to be force transferred for each address",
+        "newOwners_": "the addresses of which locked tokens are transferred to"
+      },
+      "returns": {
+        "success_": "status of the trasnfer of the tokens (true/false)"
+      }
+    },
+    "batchLock(address[],uint256[])": {
+      "notice": "Lock a number of tokens for each address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if any amount_ is zero",
+        "MUST revert if any owner_ balance < amount_",
+        "MUST revert if any lock in batch fails",
+        "CAN lock when token is inactive",
+        "CAN lock when any of owners_ are deactivated",
+        "MUST NOT decrease total supply"
+      ],
+      "params": {
+        "owners_": "the addresses of the owners for which tokens are locked",
+        "amounts_": "the number of tokens to be locked for each address"
+      },
+      "returns": {
+        "success_": "status of the locking of the tokens (true/false)"
+      }
+    },
+    "batchUnlock(address[],uint256[])": {
+      "notice": "Unlock a number of tokens for each address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if any owner_ is zero address",
+        "MUST revert if any amount_ is zero",
+        "MUST revert if owner lock balance < amount_",
+        "MUST revert if any unlock in batch fails",
+        "CAN unlock when token is inactive",
+        "CAN unlock when some of owners_ are deactivated",
+        "MUST NOT increase total supply"
+      ],
+      "params": {
+        "owners_": "the addresses of the owners for which tokens are unlocked",
+        "amounts_": "the number of tokens to be unlocked for each address"
+      },
+      "returns": {
+        "success_": "status of the unlocking of the tokens (true/false)"
+      }
+    },
+    "deactivateAccount(address)": {
+      "notice": "Deactivate the address and disable regular business processes (e.g. sanctions)",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if owner_ is in active"
+      ],
+      "params": {
+        "owner_": "address of the account to be deactivated"
+      },
+      "returns": {
+        "success_": "status of the transaction (true/false)"
+      }
+    },
+    "forceBurn(address,uint256)": {
+      "notice": "Force burn a number of tokens for an address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if amount_ is zero",
+        "MUST revert if owner lock balance < amount_",
+        "CAN force burn when token is inactive",
+        "CAN force burn when owner_ is deactivated",
+        "MUST decrease total supply"
+      ],
+      "params": {
+        "owner_": "the address of the owner for which tokens are force burned",
+        "amount_": "the number of tokens to be burned"
+      },
+      "returns": {
+        "success_": "status of the burning of the tokens (true/false)"
+      }
+    },
+    "forceTransfer(address,address,uint256)": {
+      "notice": "Force transfer a number of locked tokens for an address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if amount_ is zero",
+        "MUST revert if owner lock balance < amount_",
+        "CAN force transfer when token is inactive",
+        "CAN force transfer when owner_ is deactivated",
+        "CAN force transfer when newOwner_ is deactivated"
+      ],
+      "params": {
+        "owner_": "the address of the owner for which tokens are transferred",
+        "newOwner_": "the address of which locked tokens are transferred to",
+        "amount_": "the number of tokens to be unlocked"
+      },
+      "returns": {
+        "success_": "status of the transfer of the tokens (true/false)"
+      }
+    },
+    "lock(address,uint256)": {
+      "notice": "Lock a number of tokens for an address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if amount_ is zero",
+        "MUST revert if owner_ balance < amount_",
+        "CAN lock when token is inactive",
+        "CAN lock when owner_ is deactivated",
+        "MUST NOT decrease total supply"
+      ],
+      "params": {
+        "owner_": "the address of the owner for which tokens are locked",
+        "amount_": "the number of tokens to be locked"
+      },
+      "returns": {
+        "success_": "status of the locking of the tokens (true/false)"
+      }
+    },
+    "unlock(address,uint256)": {
+      "notice": "Unlock a number of tokens for an address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have account admin role",
+        "MUST revert if owner_ is zero address",
+        "MUST revert if amount_ is zero",
+        "MUST revert if owner lock balance < amount_",
+        "CAN unlock token is inactive",
+        "CAN unlock when owner_ is deactivated",
+        "MUST NOT increase total supply"
+      ],
+      "params": {
+        "owner_": "the address of the owner for which tokens are unlocked",
+        "amount_": "the number of tokens to be unlocked"
+      },
+      "returns": {
+        "success_": "status of the unlocking of the tokens (true/false)"
+      }
+    }
+  },
+  "ManagedTokenFacetTimelockable": {
+    "activateToken()": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    }
+  },
+  "MintableFacet": {
+    "mint(bytes32,address,uint256)": {
+      "notice": "Creates a request to mint tokens to the requester address",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if request is already initialized with requestId_",
+        "MUST revert if token is inactive",
+        "MUST revert if msg.sender is deactivated",
+        "MUST revert if msg.sender is not a Tokenization agent",
+        "MUST revert if requester_ is deactivated",
+        "MUST revert if requester_ is the zero address",
+        "MUST increase requester_ balance",
+        "MUST increase total supply"
+      ],
+      "params": {
+        "requestId_": "id for the request to be created",
+        "requester_": "address for which request is made",
+        "amount_": "requested number of tokens to be minted"
+      },
+      "returns": {
+        "success_": "status of the request to mint (true/false)"
+      }
+    }
+  },
+  "PausableFacetTimelockable": {
+    "unpause()": {
+      "dev": [
+        "MUST revert if not within timelock execution window"
+      ]
+    }
+  },
+  "StopCodesFacet": {
+    "getStopCodes(address)": {
+      "notice": "Function to retrieve StopCodes for account_",
+      "params": {
+        "account_": "address for which StopCodes are retrieved"
+      },
+      "returns": {
+        "stopCodes_": "StopCodes struct for account_"
+      }
+    }
+  },
+  "TimelockableFacet": {
+    "executableAt(bytes4,bytes,address)": {
+      "notice": "Get the timestamp at which a queued transaction will be executable",
+      "params": {
+        "caller_": "address which queued the transaction",
+        "selector_": "function selector to be called",
+        "data_": "calldata to be sent to the function to be called"
+      },
+      "returns": {
+        "eta_": "timestamp at which the transaction will be executable, or 0 if the transaction is not queued"
+      }
+    },
+    "getDelay()": {
+      "notice": "Get the current timelock delay",
+      "returns": {
+        "delay_": "current timelock delay in seconds"
+      }
+    },
+    "isExecutable(bytes4,bytes,address)": {
+      "notice": "Check if a transaction is executable",
+      "params": {
+        "caller_": "address which queued the transaction",
+        "selector_": "function selector to be called",
+        "data_": "calldata to be sent to the function to be called"
+      },
+      "returns": {
+        "executable_": "true if the transaction is executable, false otherwise"
+      }
+    },
+    "cancelTransaction(bytes4,bytes)": {
+      "notice": "Cancel a queued timelock-protected transaction",
+      "dev": [
+        "MUST revert if msg.sender does not have one of TOKENIZATION_AGENT, ACCOUNT_ADMIN, TOKEN_ADMIN roles",
+        "MUST revert if transaction is not queued",
+        "Transaction can be cancelled even if timelock delay has passed"
+      ],
+      "params": {
+        "selector_": "function selector to be called",
+        "data_": "calldata to be sent to the function to be called"
+      },
+      "returns": {
+        "success_": "true if the operation was successful"
+      }
+    },
+    "queueTransaction(bytes4,bytes)": {
+      "notice": "Queue a timelock-protected transaction to be executable after the timelock delay",
+      "dev": [
+        "MUST revert if msg.sender does not have one of TOKENIZATION_AGENT, ACCOUNT_ADMIN, TOKEN_ADMIN roles",
+        "MUST revert if transaction is already queued",
+        "MUST revert if transaction is past timelock grace period"
+      ],
+      "params": {
+        "selector_": "function selector to be called",
+        "data_": "calldata to be sent to the function to be called"
+      },
+      "returns": {
+        "success_": "true if the operation was successful"
+      }
+    },
+    "revokeTransaction(bytes4,bytes,address)": {
+      "notice": "Revoke a queued timelock-protected transaction and execute it immediately, bypassing the timelock delay",
+      "dev": [
+        "MUST revert if msg.sender does not have TOKEN_ADMIN role",
+        "MUST revert if transaction is not queued",
+        "Transaction can be cancelled even if timelock delay has passed"
+      ],
+      "params": {
+        "selector_": "function selector to be called",
+        "data_": "calldata to be sent to the function to be called"
+      },
+      "returns": {
+        "success_": "true if the operation was successful"
+      }
+    },
+    "setDelay(uint256)": {
+      "notice": "Admin function to set the timelock delay",
+      "dev": [
+        "MUST revert if msg.sender does not have TOKEN_ADMIN role",
+        "MUST revert if timelock delay is less than minimum duration(12 minutes)",
+        "MUST revert if timelock delay is more than maximum duration (24 hours)",
+        "MUST revert if not within timelock execution window"
+      ],
+      "params": {
+        "delay_": "new timelock delay in seconds"
+      },
+      "returns": {
+        "success_": "true if the operation was successful"
+      }
+    }
+  },
+  "TokenMetadataFacet": {
+    "metadata()": {
+      "notice": "Query for the token metadata",
+      "returns": {
+        "metadata_": "metadata of token"
+      }
+    },
+    "setMetadata(string)": {
+      "notice": "Update the token metadata",
+      "dev": [
+        "MUST revert if contract is paused",
+        "MUST revert if msg.sender does not have token admin role"
+      ],
+      "returns": {
+        "success_": "status of the metadata update (true/false)"
+      }
+    }
+  }
+}

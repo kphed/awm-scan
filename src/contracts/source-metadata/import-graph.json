@@ -1,0 +1,545 @@
+{
+  "diamond-proxy/FactTokenDiamond.sol": {
+    "filePath": "diamond-proxy/FactTokenDiamond.sol",
+    "imports": [
+      "diamond-proxy/interfaces/IDiamondCut.sol",
+      "diamond-proxy/libraries/LibDiamond.sol"
+    ],
+    "importedBy": []
+  },
+  "diamond-proxy/interfaces/IDiamond.sol": {
+    "filePath": "diamond-proxy/interfaces/IDiamond.sol",
+    "imports": [],
+    "importedBy": [
+      "diamond-proxy/interfaces/IDiamondCut.sol",
+      "diamond-proxy/libraries/LibDiamond.sol"
+    ]
+  },
+  "diamond-proxy/interfaces/IDiamondCut.sol": {
+    "filePath": "diamond-proxy/interfaces/IDiamondCut.sol",
+    "imports": [
+      "diamond-proxy/interfaces/IDiamond.sol"
+    ],
+    "importedBy": [
+      "diamond-proxy/FactTokenDiamond.sol",
+      "diamond-proxy/libraries/LibDiamond.sol"
+    ]
+  },
+  "diamond-proxy/libraries/LibDiamond.sol": {
+    "filePath": "diamond-proxy/libraries/LibDiamond.sol",
+    "imports": [
+      "diamond-proxy/interfaces/IDiamond.sol",
+      "diamond-proxy/interfaces/IDiamondCut.sol"
+    ],
+    "importedBy": [
+      "diamond-proxy/FactTokenDiamond.sol"
+    ]
+  },
+  "facets/AccessControlFacet.sol": {
+    "filePath": "facets/AccessControlFacet.sol",
+    "imports": [
+      "interfaces/IAccessControl.sol",
+      "libraries/LibAccessControl.sol"
+    ],
+    "importedBy": [
+      "facets/extensions/timelock/AccessControlFacetTimelockable.sol"
+    ]
+  },
+  "facets/BurnableFacet.sol": {
+    "filePath": "facets/BurnableFacet.sol",
+    "imports": [
+      "interfaces/IBurnable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibBurnable.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/BurnPreparableFacet.sol": {
+    "filePath": "facets/BurnPreparableFacet.sol",
+    "imports": [
+      "interfaces/IBurnPreparable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibBurnRequestable.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/BurnRespondableFacet.sol": {
+    "filePath": "facets/BurnRespondableFacet.sol",
+    "imports": [
+      "interfaces/IBurnRespondable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibBurnRequestable.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/DiamondCutFacet.sol": {
+    "filePath": "facets/DiamondCutFacet.sol",
+    "imports": [
+      "interfaces/IDiamondCut.sol",
+      "libraries/LibDiamond.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/DiamondLoupeFacet.sol": {
+    "filePath": "facets/DiamondLoupeFacet.sol",
+    "imports": [
+      "interfaces/IDiamondLoupe.sol",
+      "libraries/LibDiamond.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/ERC165Facet.sol": {
+    "filePath": "facets/ERC165Facet.sol",
+    "imports": [
+      "interfaces/IERC165.sol",
+      "libraries/LibDiamond.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/ERC173Facet.sol": {
+    "filePath": "facets/ERC173Facet.sol",
+    "imports": [
+      "interfaces/IERC173.sol",
+      "libraries/LibDiamond.sol"
+    ],
+    "importedBy": [
+      "facets/extensions/timelock/ERC173FacetTimelockable.sol"
+    ]
+  },
+  "facets/ERC20Facet.sol": {
+    "filePath": "facets/ERC20Facet.sol",
+    "imports": [
+      "interfaces/IERC20.sol",
+      "libraries/LibERC20.sol",
+      "libraries/LibManagedAccount.sol",
+      "libraries/LibManagedToken.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": [
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol"
+    ]
+  },
+  "facets/ERC20FacetTransferBurnableStoppable.sol": {
+    "filePath": "facets/ERC20FacetTransferBurnableStoppable.sol",
+    "imports": [
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol",
+      "libraries/LibStopCodes.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/timelock/AccessControlFacetTimelockable.sol": {
+    "filePath": "facets/extensions/timelock/AccessControlFacetTimelockable.sol",
+    "imports": [
+      "facets/AccessControlFacet.sol",
+      "libraries/extensions/timelock/LibTimelockable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/timelock/ERC173FacetTimelockable.sol": {
+    "filePath": "facets/extensions/timelock/ERC173FacetTimelockable.sol",
+    "imports": [
+      "facets/ERC173Facet.sol",
+      "libraries/extensions/timelock/LibTimelockable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/timelock/ManagedTokenFacetTimelockable.sol": {
+    "filePath": "facets/extensions/timelock/ManagedTokenFacetTimelockable.sol",
+    "imports": [
+      "facets/ManagedTokenFacet.sol",
+      "libraries/extensions/timelock/LibTimelockable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/timelock/PausableFacetTimelockable.sol": {
+    "filePath": "facets/extensions/timelock/PausableFacetTimelockable.sol",
+    "imports": [
+      "facets/PausableFacet.sol",
+      "libraries/extensions/timelock/LibTimelockable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/timelock/TimelockableFacet.sol": {
+    "filePath": "facets/extensions/timelock/TimelockableFacet.sol",
+    "imports": [
+      "interfaces/extensions/timelock/ITimelockable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/extensions/timelock/LibTimelockable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol": {
+    "filePath": "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol",
+    "imports": [
+      "facets/ERC20Facet.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibBurnRequestable.sol",
+      "libraries/LibERC20.sol",
+      "libraries/LibFactBase.sol"
+    ],
+    "importedBy": [
+      "facets/ERC20FacetTransferBurnableStoppable.sol"
+    ]
+  },
+  "facets/ManagedAccountFacet.sol": {
+    "filePath": "facets/ManagedAccountFacet.sol",
+    "imports": [
+      "interfaces/IManagedAccount.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibManagedAccount.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/ManagedTokenFacet.sol": {
+    "filePath": "facets/ManagedTokenFacet.sol",
+    "imports": [
+      "interfaces/IManagedToken.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibManagedToken.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": [
+      "facets/extensions/timelock/ManagedTokenFacetTimelockable.sol"
+    ]
+  },
+  "facets/MintableFacet.sol": {
+    "filePath": "facets/MintableFacet.sol",
+    "imports": [
+      "interfaces/IMintable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibManagedAccount.sol",
+      "libraries/LibManagedToken.sol",
+      "libraries/LibMintable.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/PausableFacet.sol": {
+    "filePath": "facets/PausableFacet.sol",
+    "imports": [
+      "interfaces/IPausable.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol"
+    ],
+    "importedBy": [
+      "facets/extensions/timelock/PausableFacetTimelockable.sol"
+    ]
+  },
+  "facets/StopCodesFacet.sol": {
+    "filePath": "facets/StopCodesFacet.sol",
+    "imports": [
+      "interfaces/IStopCodes.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol",
+      "libraries/LibStopCodes.sol"
+    ],
+    "importedBy": []
+  },
+  "facets/TokenMetadataFacet.sol": {
+    "filePath": "facets/TokenMetadataFacet.sol",
+    "imports": [
+      "interfaces/ITokenMetadata.sol",
+      "libraries/LibAccessControl.sol",
+      "libraries/LibFactBase.sol",
+      "libraries/LibPausable.sol",
+      "libraries/LibTokenMetadata.sol"
+    ],
+    "importedBy": []
+  },
+  "interfaces/extensions/timelock/ITimelockable.sol": {
+    "filePath": "interfaces/extensions/timelock/ITimelockable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/extensions/timelock/TimelockableFacet.sol"
+    ]
+  },
+  "interfaces/IAccessControl.sol": {
+    "filePath": "interfaces/IAccessControl.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/AccessControlFacet.sol"
+    ]
+  },
+  "interfaces/IBurnable.sol": {
+    "filePath": "interfaces/IBurnable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/BurnableFacet.sol"
+    ]
+  },
+  "interfaces/IBurnPreparable.sol": {
+    "filePath": "interfaces/IBurnPreparable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/BurnPreparableFacet.sol"
+    ]
+  },
+  "interfaces/IBurnRespondable.sol": {
+    "filePath": "interfaces/IBurnRespondable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/BurnRespondableFacet.sol"
+    ]
+  },
+  "interfaces/IDiamond.sol": {
+    "filePath": "interfaces/IDiamond.sol",
+    "imports": [],
+    "importedBy": [
+      "interfaces/IDiamondCut.sol",
+      "libraries/LibDiamond.sol"
+    ]
+  },
+  "interfaces/IDiamondCut.sol": {
+    "filePath": "interfaces/IDiamondCut.sol",
+    "imports": [
+      "interfaces/IDiamond.sol"
+    ],
+    "importedBy": [
+      "facets/DiamondCutFacet.sol",
+      "libraries/LibDiamond.sol"
+    ]
+  },
+  "interfaces/IDiamondLoupe.sol": {
+    "filePath": "interfaces/IDiamondLoupe.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/DiamondLoupeFacet.sol"
+    ]
+  },
+  "interfaces/IERC165.sol": {
+    "filePath": "interfaces/IERC165.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC165Facet.sol"
+    ]
+  },
+  "interfaces/IERC173.sol": {
+    "filePath": "interfaces/IERC173.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC173Facet.sol"
+    ]
+  },
+  "interfaces/IERC20.sol": {
+    "filePath": "interfaces/IERC20.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC20Facet.sol"
+    ]
+  },
+  "interfaces/IManagedAccount.sol": {
+    "filePath": "interfaces/IManagedAccount.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ManagedAccountFacet.sol"
+    ]
+  },
+  "interfaces/IManagedToken.sol": {
+    "filePath": "interfaces/IManagedToken.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ManagedTokenFacet.sol"
+    ]
+  },
+  "interfaces/IMintable.sol": {
+    "filePath": "interfaces/IMintable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/MintableFacet.sol"
+    ]
+  },
+  "interfaces/IPausable.sol": {
+    "filePath": "interfaces/IPausable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/PausableFacet.sol"
+    ]
+  },
+  "interfaces/IStopCodes.sol": {
+    "filePath": "interfaces/IStopCodes.sol",
+    "imports": [
+      "libraries/LibStopCodes.sol"
+    ],
+    "importedBy": [
+      "facets/StopCodesFacet.sol"
+    ]
+  },
+  "interfaces/ITokenMetadata.sol": {
+    "filePath": "interfaces/ITokenMetadata.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/TokenMetadataFacet.sol"
+    ]
+  },
+  "libraries/extensions/timelock/LibTimelockable.sol": {
+    "filePath": "libraries/extensions/timelock/LibTimelockable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/extensions/timelock/AccessControlFacetTimelockable.sol",
+      "facets/extensions/timelock/ERC173FacetTimelockable.sol",
+      "facets/extensions/timelock/ManagedTokenFacetTimelockable.sol",
+      "facets/extensions/timelock/PausableFacetTimelockable.sol",
+      "facets/extensions/timelock/TimelockableFacet.sol"
+    ]
+  },
+  "libraries/LibAccessControl.sol": {
+    "filePath": "libraries/LibAccessControl.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/AccessControlFacet.sol",
+      "facets/BurnPreparableFacet.sol",
+      "facets/BurnRespondableFacet.sol",
+      "facets/BurnableFacet.sol",
+      "facets/ManagedAccountFacet.sol",
+      "facets/ManagedTokenFacet.sol",
+      "facets/MintableFacet.sol",
+      "facets/PausableFacet.sol",
+      "facets/StopCodesFacet.sol",
+      "facets/TokenMetadataFacet.sol",
+      "facets/extensions/timelock/TimelockableFacet.sol",
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol"
+    ]
+  },
+  "libraries/LibBurnable.sol": {
+    "filePath": "libraries/LibBurnable.sol",
+    "imports": [
+      "libraries/LibERC20.sol",
+      "libraries/LibFactBase.sol"
+    ],
+    "importedBy": [
+      "facets/BurnableFacet.sol"
+    ]
+  },
+  "libraries/LibBurnRequestable.sol": {
+    "filePath": "libraries/LibBurnRequestable.sol",
+    "imports": [
+      "libraries/LibERC20.sol",
+      "libraries/LibFactBase.sol"
+    ],
+    "importedBy": [
+      "facets/BurnPreparableFacet.sol",
+      "facets/BurnRespondableFacet.sol",
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol"
+    ]
+  },
+  "libraries/LibDiamond.sol": {
+    "filePath": "libraries/LibDiamond.sol",
+    "imports": [
+      "interfaces/IDiamond.sol",
+      "interfaces/IDiamondCut.sol"
+    ],
+    "importedBy": [
+      "facets/DiamondCutFacet.sol",
+      "facets/DiamondLoupeFacet.sol",
+      "facets/ERC165Facet.sol",
+      "facets/ERC173Facet.sol"
+    ]
+  },
+  "libraries/LibERC20.sol": {
+    "filePath": "libraries/LibERC20.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC20Facet.sol",
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol",
+      "libraries/LibBurnRequestable.sol",
+      "libraries/LibBurnable.sol",
+      "libraries/LibManagedAccount.sol",
+      "libraries/LibMintable.sol"
+    ]
+  },
+  "libraries/LibFactBase.sol": {
+    "filePath": "libraries/LibFactBase.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/BurnPreparableFacet.sol",
+      "facets/BurnRespondableFacet.sol",
+      "facets/BurnableFacet.sol",
+      "facets/ManagedAccountFacet.sol",
+      "facets/ManagedTokenFacet.sol",
+      "facets/MintableFacet.sol",
+      "facets/PausableFacet.sol",
+      "facets/StopCodesFacet.sol",
+      "facets/TokenMetadataFacet.sol",
+      "facets/extensions/timelock/TimelockableFacet.sol",
+      "facets/extensions/transferBurnable/ERC20FacetTransferBurnable.sol",
+      "libraries/LibBurnRequestable.sol",
+      "libraries/LibBurnable.sol",
+      "libraries/LibMintable.sol"
+    ]
+  },
+  "libraries/LibManagedAccount.sol": {
+    "filePath": "libraries/LibManagedAccount.sol",
+    "imports": [
+      "libraries/LibERC20.sol"
+    ],
+    "importedBy": [
+      "facets/ERC20Facet.sol",
+      "facets/ManagedAccountFacet.sol",
+      "facets/MintableFacet.sol"
+    ]
+  },
+  "libraries/LibManagedToken.sol": {
+    "filePath": "libraries/LibManagedToken.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC20Facet.sol",
+      "facets/ManagedTokenFacet.sol",
+      "facets/MintableFacet.sol"
+    ]
+  },
+  "libraries/LibMintable.sol": {
+    "filePath": "libraries/LibMintable.sol",
+    "imports": [
+      "libraries/LibERC20.sol",
+      "libraries/LibFactBase.sol"
+    ],
+    "importedBy": [
+      "facets/MintableFacet.sol"
+    ]
+  },
+  "libraries/LibPausable.sol": {
+    "filePath": "libraries/LibPausable.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/BurnPreparableFacet.sol",
+      "facets/BurnRespondableFacet.sol",
+      "facets/BurnableFacet.sol",
+      "facets/ERC20Facet.sol",
+      "facets/ManagedAccountFacet.sol",
+      "facets/ManagedTokenFacet.sol",
+      "facets/MintableFacet.sol",
+      "facets/PausableFacet.sol",
+      "facets/StopCodesFacet.sol",
+      "facets/TokenMetadataFacet.sol"
+    ]
+  },
+  "libraries/LibStopCodes.sol": {
+    "filePath": "libraries/LibStopCodes.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/ERC20FacetTransferBurnableStoppable.sol",
+      "facets/StopCodesFacet.sol",
+      "interfaces/IStopCodes.sol"
+    ]
+  },
+  "libraries/LibTokenMetadata.sol": {
+    "filePath": "libraries/LibTokenMetadata.sol",
+    "imports": [],
+    "importedBy": [
+      "facets/TokenMetadataFacet.sol"
+    ]
+  }
+}

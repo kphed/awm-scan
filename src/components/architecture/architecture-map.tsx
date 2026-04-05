@@ -19,6 +19,7 @@ import ClusterGroup from "./cluster-group";
 import DependencyView from "./dependency-view";
 import DiamondHeader from "./diamond-header";
 import FacetSidebar from "./facet-sidebar";
+import LibraryCrossRef from "./library-cross-ref";
 import LifecycleFlows from "./lifecycle-flows";
 import PermissionMatrix from "./permission-matrix";
 
@@ -89,6 +90,7 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
                   Permission Matrix
                 </Tabs.Trigger>
                 <Tabs.Trigger value="dependencies">Dependencies</Tabs.Trigger>
+                <Tabs.Trigger value="libraries">Shared Libraries</Tabs.Trigger>
                 <Tabs.Trigger value="flows">Lifecycle Flows</Tabs.Trigger>
               </Tabs.List>
 
@@ -114,6 +116,14 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
 
               <Tabs.Content value="dependencies" pt="6">
                 <DependencyView data={data} onSelectFacet={handleFacetSelect} />
+              </Tabs.Content>
+
+              <Tabs.Content value="libraries" pt="6">
+                <LibraryCrossRef
+                  libraries={data.sharedLibraries}
+                  data={data}
+                  onSelectFacet={handleFacetSelect}
+                />
               </Tabs.Content>
 
               <Tabs.Content value="flows" pt="6">

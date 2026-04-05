@@ -7,6 +7,7 @@ import {
   getEventDescription,
   getAllFacets,
   getMethodDescription,
+  getSourceExplorerData,
   ROLE_DESCRIPTIONS,
 } from "../src/lib/contracts";
 import { LIFECYCLE_FLOWS } from "../src/lib/contracts/flows";
@@ -91,6 +92,77 @@ describe("contracts data layer", () => {
     expect(burnableFacet?.address).toBe(
       "0x88183F91a0A7315BD3e2102BE7520c88cE9EFF67",
     );
+  });
+
+  test("assembles source-backed method, dependency, and library metadata", () => {
+    const data = assembleArchitectureData();
+    const mintableFacet = data.clusters
+      .flatMap((cluster) => cluster.facets)
+      .find((facet) => facet.name === "MintableFacet");
+    const erc20Facet = data.clusters
+      .flatMap((cluster) => cluster.facets)
+      .find((facet) => facet.name === "ERC20FacetTransferBurnableStoppable");
+    const stopCodesCrossRef = data.sharedLibraries.find(
+      (reference) => reference.libraryName === "LibStopCodes",
+    );
+
+    expect(mintableFacet?.methodSource["mint(bytes32,address,uint256)"]).toMatchObject(
+      {
+        filePath: "facets/MintableFacet.sol",
+        startLine: 49,
+        endLine: 65,
+      },
+    );
+    expect(
+      mintableFacet?.methodSource["mint(bytes32,address,uint256)"]?.natspec,
+    ).toMatchObject({
+      notice: "Creates a request to mint tokens to the requester address",
+    });
+    expect(mintableFacet?.relatedSourceFiles).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: "facets/MintableFacet.sol",
+          compilerProfile: "default",
+        }),
+        expect.objectContaining({
+          path: "interfaces/IMintable.sol",
+        }),
+      ]),
+    );
+    expect(
+      erc20Facet?.dependencies?.find(
+        (dependency) => dependency.target === "StopCodesFacet",
+      )?.proof,
+    ).toMatchObject({
+      filePath: "facets/ERC20FacetTransferBurnableStoppable.sol",
+      startLine: 10,
+    });
+    expect(stopCodesCrossRef).toMatchObject({
+      libraryName: "LibStopCodes",
+    });
+  });
+
+  test("exposes a nested source explorer tree with compiler metadata", () => {
+    const explorerData = getSourceExplorerData();
+    const facetsDirectory = explorerData.fileTree.find(
+      (entry) => entry.path === "facets",
+    );
+
+    expect(facetsDirectory).toMatchObject({
+      path: "facets",
+      type: "directory",
+      children: expect.arrayContaining([
+        expect.objectContaining({
+          path: "facets/MintableFacet.sol",
+          type: "file",
+          compilerProfile: "default",
+          solcVersion: "0.8.26",
+        }),
+      ]),
+    });
+    expect(explorerData.importGraph["libraries/LibMintable.sol"]).toMatchObject({
+      importedBy: expect.arrayContaining(["facets/MintableFacet.sol"]),
+    });
   });
 
   test("returns authored method and event descriptions when present", () => {

@@ -1,0 +1,395 @@
+{
+  "AccessControlFacetTimelockable": {},
+  "BurnableFacet": {
+    "burn(bytes32,address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/BurnableFacet.sol",
+        "line": 39,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyTokenizationAgent",
+        "filePath": "facets/BurnableFacet.sol",
+        "line": 39,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      }
+    ]
+  },
+  "BurnPreparableFacet": {
+    "prepareBurn(bytes32,address,address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/BurnPreparableFacet.sol",
+        "line": 45,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyTokenizationAgent",
+        "filePath": "facets/BurnPreparableFacet.sol",
+        "line": 45,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      },
+      {
+        "name": "onlyBurner",
+        "filePath": "facets/BurnPreparableFacet.sol",
+        "line": 45,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.BURNER, burner_)",
+        "type": "role"
+      }
+    ]
+  },
+  "BurnRespondableFacet": {
+    "approveBurn(bytes32,address)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/BurnRespondableFacet.sol",
+        "line": 47,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyTokenizationAgent",
+        "filePath": "facets/BurnRespondableFacet.sol",
+        "line": 47,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "rejectBurn(bytes32,address)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/BurnRespondableFacet.sol",
+        "line": 65,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyTokenizationAgent",
+        "filePath": "facets/BurnRespondableFacet.sol",
+        "line": 65,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      }
+    ]
+  },
+  "DiamondCutFacet": {},
+  "DiamondLoupeFacet": {},
+  "ERC165Facet": {},
+  "ERC173FacetTimelockable": {},
+  "ERC20FacetTransferBurnableStoppable": {
+    "transfer(address,uint256)": [
+      {
+        "name": "onlyNotStopped",
+        "filePath": "facets/ERC20FacetTransferBurnableStoppable.sol",
+        "line": 34,
+        "type": "other"
+      }
+    ],
+    "transferFrom(address,address,uint256)": [
+      {
+        "name": "onlyNotStopped",
+        "filePath": "facets/ERC20FacetTransferBurnableStoppable.sol",
+        "line": 50,
+        "type": "other"
+      }
+    ]
+  },
+  "FactTokenDiamond": {},
+  "ManagedAccountFacet": {
+    "activateAccount(address)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 59,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 59,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchActivateAccount(address[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 75,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 75,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchDeactivateAccount(address[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 106,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 106,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchForceBurn(address[],uint256[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 249,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 249,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchForceTransfer(address[],address[],uint256[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 293,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 293,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchLock(address[],uint256[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 167,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 167,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "batchUnlock(address[],uint256[])": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 208,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 208,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "deactivateAccount(address)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 90,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 90,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      },
+      {
+        "name": "onlyActiveAccount",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 90,
+        "resolvedCall": "LibManagedAccount._accountActive(owner_)",
+        "type": "account"
+      }
+    ],
+    "forceBurn(address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 228,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 228,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "forceTransfer(address,address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 270,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 270,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "lock(address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 146,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 146,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "unlock(address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 187,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyAccountAdmin",
+        "filePath": "facets/ManagedAccountFacet.sol",
+        "line": 187,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ]
+  },
+  "ManagedTokenFacetTimelockable": {},
+  "MintableFacet": {
+    "mint(bytes32,address,uint256)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/MintableFacet.sol",
+        "line": 57,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "whenActiveToken",
+        "filePath": "facets/MintableFacet.sol",
+        "line": 58,
+        "resolvedCall": "!LibManagedToken.ref()._inactive",
+        "type": "token"
+      },
+      {
+        "name": "onlyTokenizationAgent",
+        "filePath": "facets/MintableFacet.sol",
+        "line": 59,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      },
+      {
+        "name": "onlyActiveAccount",
+        "filePath": "facets/MintableFacet.sol",
+        "line": 60,
+        "resolvedCall": "LibManagedAccount._accountActive(requester_)",
+        "type": "account"
+      }
+    ]
+  },
+  "PausableFacetTimelockable": {},
+  "StopCodesFacet": {},
+  "TimelockableFacet": {
+    "cancelTransaction(bytes4,bytes)": [
+      {
+        "name": "onlyAdmin",
+        "filePath": "facets/extensions/timelock/TimelockableFacet.sol",
+        "line": 74,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKEN_ADMIN, msg.sender) || LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender) || LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "queueTransaction(bytes4,bytes)": [
+      {
+        "name": "onlyAdmin",
+        "filePath": "facets/extensions/timelock/TimelockableFacet.sol",
+        "line": 60,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKEN_ADMIN, msg.sender) || LibAccessControl._hasRole(LibFactBase.ACCOUNT_ADMIN, msg.sender) || LibAccessControl._hasRole(LibFactBase.TOKENIZATION_AGENT, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "revokeTransaction(bytes4,bytes,address)": [
+      {
+        "name": "onlyTokenAdmin",
+        "filePath": "facets/extensions/timelock/TimelockableFacet.sol",
+        "line": 89,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKEN_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ],
+    "setDelay(uint256)": [
+      {
+        "name": "onlyTokenAdmin",
+        "filePath": "facets/extensions/timelock/TimelockableFacet.sol",
+        "line": 36,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKEN_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ]
+  },
+  "TokenMetadataFacet": {
+    "setMetadata(string)": [
+      {
+        "name": "whenNotPaused",
+        "filePath": "facets/TokenMetadataFacet.sol",
+        "line": 39,
+        "resolvedCall": "!LibPausable.ref().paused",
+        "type": "pause"
+      },
+      {
+        "name": "onlyTokenAdmin",
+        "filePath": "facets/TokenMetadataFacet.sol",
+        "line": 39,
+        "resolvedCall": "LibAccessControl._hasRole(LibFactBase.TOKEN_ADMIN, msg.sender)",
+        "type": "role"
+      }
+    ]
+  }
+}

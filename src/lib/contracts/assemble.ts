@@ -1,6 +1,13 @@
 import { FACT_TOKEN_DIAMOND_ADDRESS, SOURCE_ARTIFACTS } from "./artifacts";
 import { getAllFacets } from "./abi-parser";
 import { BUSINESS_CLUSTERS, FACET_REGISTRY } from "./registry";
+import {
+  getFacetDependencyProofs,
+  getFacetMethodSource,
+  getFacetRelatedSourceFiles,
+  getFacetStorageAccess,
+  getSharedLibraryReferences,
+} from "./source-metadata";
 import type {
   ArchitectureData,
   ArchitectureFacet,
@@ -73,6 +80,13 @@ export function assembleArchitectureData(
           colorPalette: cluster.colorPalette,
           address: sourceArtifacts[facetName]?.address ?? undefined,
           isFallback: false,
+          methodSource: getFacetMethodSource(facetName),
+          relatedSourceFiles: getFacetRelatedSourceFiles(facetName),
+          storageAccess: getFacetStorageAccess(facetName),
+          dependencies: (metadata.dependencies ?? []).map((dependency) => ({
+            ...dependency,
+            proof: getFacetDependencyProofs(facetName)[dependency.target],
+          })),
         };
 
         return merged;
@@ -106,6 +120,10 @@ export function assembleArchitectureData(
       colorPalette: internalsCluster.colorPalette,
       address: sourceArtifacts[facet.name]?.address ?? undefined,
       isFallback: true,
+      methodSource: getFacetMethodSource(facet.name),
+      relatedSourceFiles: getFacetRelatedSourceFiles(facet.name),
+      storageAccess: getFacetStorageAccess(facet.name),
+      dependencies: [],
     });
   }
 
@@ -129,6 +147,7 @@ export function assembleArchitectureData(
         0,
       ),
     },
+    sharedLibraries: getSharedLibraryReferences(),
   };
 }
 

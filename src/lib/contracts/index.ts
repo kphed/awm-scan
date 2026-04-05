@@ -14,7 +14,26 @@ export {
   type PermissionMatrixData,
 } from "./permission-matrix";
 export { BUSINESS_CLUSTERS, FACET_REGISTRY } from "./registry";
+export {
+  buildSourceExplorerHref,
+  buildSourceOwnerMap,
+  findSourceFileEntry,
+  flattenSourceFileTree,
+  formatLineRange,
+  getDefaultSourcePath,
+  parseLineRangeParam,
+  type LineRange,
+  type SourceOwner,
+} from "./source-explorer";
 export { extractPrimarySourceCode, getFacetSourceCode } from "./source-parser";
+export {
+  getFacetDependencyProofs,
+  getFacetMethodSource,
+  getFacetRelatedSourceFiles,
+  getFacetStorageAccess,
+  getSharedLibraryReferences,
+  getSourceExplorerData,
+} from "./source-metadata";
 export type {
   AbiParam,
   ArchitectureData,
@@ -28,6 +47,15 @@ export type {
   FacetDependency,
   FacetData,
   FacetMetadata,
+  DependencyProof,
+  ImportGraphEntry,
+  MethodSourceInfo,
+  ModifierInfo,
+  NatSpecInfo,
   ParsedEvent,
   ParsedMethod,
+  SharedLibraryReference,
+  SourceFileEntry,
+  SourceFileRecord,
+  StorageAccessInfo,
 } from "./types";
