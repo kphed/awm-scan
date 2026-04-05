@@ -113,11 +113,7 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
               </Tabs.Content>
 
               <Tabs.Content value="dependencies" pt="6">
-                <DependencyView
-                  data={data}
-                  selectedFacet={selectedFacet}
-                  onSelectFacet={handleFacetSelect}
-                />
+                <DependencyView data={data} onSelectFacet={handleFacetSelect} />
               </Tabs.Content>
 
               <Tabs.Content value="flows" pt="6">

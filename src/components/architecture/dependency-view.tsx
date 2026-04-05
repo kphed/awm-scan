@@ -1,21 +1,25 @@
-import { Badge, Card, HStack, Separator, Stack, Text } from "@chakra-ui/react";
-import { useMemo } from "react";
+import {
+  Badge,
+  Button,
+  Card,
+  HStack,
+  Separator,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { useMemo, useState } from "react";
 import type { ArchitectureData, ArchitectureFacet } from "@/lib/contracts";
 import { useDependencyHighlight } from "@/hooks/use-dependency-highlight";
 
 interface DependencyViewProps {
   data: ArchitectureData;
-  selectedFacet: ArchitectureFacet | null;
   onSelectFacet: (facet: ArchitectureFacet | null) => void;
 }
 
-const DependencyView = ({
-  data,
-  selectedFacet,
-  onSelectFacet,
-}: DependencyViewProps) => {
+const DependencyView = ({ data, onSelectFacet }: DependencyViewProps) => {
+  const [focusedFacetName, setFocusedFacetName] = useState<string | null>(null);
   const { blastRadius, facetLookup, highlighted, relationships } =
-    useDependencyHighlight(data, selectedFacet?.name ?? null);
+    useDependencyHighlight(data, focusedFacetName);
   const relationshipsByTarget = useMemo(() => {
     const map = new Map<string, typeof relationships>();
 
@@ -28,9 +32,8 @@ const DependencyView = ({
 
     return map;
   }, [relationships]);
-  const selectedFacetName = selectedFacet?.name ?? null;
-  const selectedRelationshipFacet = selectedFacetName
-    ? (facetLookup.get(selectedFacetName) ?? selectedFacet)
+  const selectedRelationshipFacet = focusedFacetName
+    ? (facetLookup.get(focusedFacetName) ?? null)
     : null;
 
   return (
@@ -45,24 +48,43 @@ const DependencyView = ({
         <Card.Root borderWidth="1px" borderColor="blue.subtle" bg="bg.subtle">
           <Card.Body>
             <Stack gap="3">
-              <Stack gap="1">
-                <Text fontWeight="semibold">
-                  Dependency relationships:{" "}
-                  {selectedRelationshipFacet.displayName}
-                </Text>
-                <Text color="fg.muted" fontSize="sm">
-                  Modifying or removing this module is operationally connected
-                  to{" "}
-                  <Text as="span" fontWeight="semibold" color="fg">
-                    {blastRadius.affectedFacets} facets
-                  </Text>{" "}
-                  across{" "}
-                  <Text as="span" fontWeight="semibold" color="fg">
-                    {blastRadius.affectedClusters} clusters
+              <HStack justify="space-between" align="start" gap="3" wrap="wrap">
+                <Stack gap="1">
+                  <Text fontWeight="semibold">
+                    Dependency relationships:{" "}
+                    {selectedRelationshipFacet.displayName}
                   </Text>
-                  .
-                </Text>
-              </Stack>
+                  <Text color="fg.muted" fontSize="sm">
+                    Modifying or removing this module is operationally connected
+                    to{" "}
+                    <Text as="span" fontWeight="semibold" color="fg">
+                      {blastRadius.affectedFacets} facets
+                    </Text>{" "}
+                    across{" "}
+                    <Text as="span" fontWeight="semibold" color="fg">
+                      {blastRadius.affectedClusters} clusters
+                    </Text>
+                    .
+                  </Text>
+                </Stack>
+
+                <HStack gap="2" wrap="wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onSelectFacet(selectedRelationshipFacet)}
+                  >
+                    Open module details
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="subtle"
+                    onClick={() => setFocusedFacetName(null)}
+                  >
+                    Clear dependency filter
+                  </Button>
+                </HStack>
+              </HStack>
 
               {relationships.length > 0 ? (
                 <Stack gap="2">
@@ -102,125 +124,131 @@ const DependencyView = ({
       ) : null}
 
       <Stack gap="6">
-        {data.clusters.map((cluster) => (
-          <Stack key={cluster.id} gap="4">
-            <Stack gap="1">
-              <Text fontWeight="semibold">{cluster.label}</Text>
-              <Text color="fg.muted" fontSize="sm">
-                {cluster.subtitle}
-              </Text>
-            </Stack>
+        {data.clusters.map((cluster) => {
+          const visibleFacets = selectedRelationshipFacet
+            ? cluster.facets.filter((facet) => highlighted.has(facet.name))
+            : cluster.facets;
 
-            <Stack gap="3">
-              {cluster.facets.map((facet) => {
-                const isSelected = selectedFacetName === facet.name;
-                const facetRelationships =
-                  relationshipsByTarget.get(facet.name) ?? [];
-                const isConnected = highlighted.has(facet.name) && !isSelected;
-                const isDimmed =
-                  Boolean(selectedFacetName) && !isSelected && !isConnected;
-                const borderColor = isSelected
-                  ? "blue.300"
-                  : facetRelationships.some(
-                        (relationship) => relationship.direction === "uses",
-                      )
-                    ? "green.300"
+          if (visibleFacets.length === 0) {
+            return null;
+          }
+
+          return (
+            <Stack key={cluster.id} gap="4">
+              <Stack gap="1">
+                <Text fontWeight="semibold">{cluster.label}</Text>
+                <Text color="fg.muted" fontSize="sm">
+                  {cluster.subtitle}
+                </Text>
+              </Stack>
+
+              <Stack gap="3">
+                {visibleFacets.map((facet) => {
+                  const isSelected = focusedFacetName === facet.name;
+                  const facetRelationships =
+                    relationshipsByTarget.get(facet.name) ?? [];
+                  const isConnected =
+                    highlighted.has(facet.name) && !isSelected;
+                  const borderColor = isSelected
+                    ? "blue.300"
                     : facetRelationships.some(
-                          (relationship) =>
-                            relationship.direction === "used-by",
+                          (relationship) => relationship.direction === "uses",
                         )
-                      ? "orange.300"
-                      : "border.subtle";
+                      ? "green.300"
+                      : facetRelationships.some(
+                            (relationship) =>
+                              relationship.direction === "used-by",
+                          )
+                        ? "orange.300"
+                        : "border.subtle";
 
-                return (
-                  <Card.Root
-                    key={facet.name}
-                    as="button"
-                    textAlign="left"
-                    borderWidth="1px"
-                    borderColor={borderColor}
-                    bg={isSelected ? "bg.subtle" : "bg.panel"}
-                    opacity={isDimmed ? 0.35 : 1}
-                    shadow={isSelected || isConnected ? "sm" : "xs"}
-                    transition="opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease"
-                    onClick={() =>
-                      onSelectFacet(
-                        isSelected
-                          ? null
-                          : (facetLookup.get(facet.name) ?? facet),
-                      )
-                    }
-                  >
-                    <Card.Body>
-                      <Stack gap="3">
-                        <HStack justify="space-between" align="start" gap="3">
-                          <Stack gap="1" align="start">
-                            <Badge
-                              colorPalette={facet.colorPalette}
-                              variant="surface"
-                            >
-                              {facet.displayName}
-                            </Badge>
-                            <Text
-                              color="fg.muted"
-                              fontFamily="var(--font-geist-mono)"
-                              fontSize="xs"
-                            >
-                              {facet.name}
-                            </Text>
-                          </Stack>
-
-                          {isSelected ? (
-                            <Badge colorPalette="blue" variant="solid">
-                              Selected
-                            </Badge>
-                          ) : null}
-                        </HStack>
-
-                        {facetRelationships.length > 0 ? (
-                          <>
-                            <Separator />
-                            <Stack gap="2">
-                              {facetRelationships.map((relationship) => (
-                                <HStack
-                                  key={`${facet.name}-${relationship.direction}-${relationship.source}`}
-                                  align="start"
-                                  gap="2"
-                                  flexWrap="wrap"
-                                >
-                                  <Badge
-                                    colorPalette={
-                                      relationship.direction === "uses"
-                                        ? "green"
-                                        : "orange"
-                                    }
-                                    variant="subtle"
-                                  >
-                                    {relationship.direction === "uses"
-                                      ? "Selected uses this"
-                                      : "Uses selected"}
-                                  </Badge>
-                                  {relationship.type ? (
-                                    <Badge variant="outline">
-                                      {relationship.type}
-                                    </Badge>
-                                  ) : null}
-                                  <Text color="fg.muted" fontSize="sm">
-                                    {relationship.relationship}
-                                  </Text>
-                                </HStack>
-                              ))}
+                  return (
+                    <Card.Root
+                      key={facet.name}
+                      as="button"
+                      textAlign="left"
+                      borderWidth="1px"
+                      borderColor={borderColor}
+                      bg={isSelected ? "bg.subtle" : "bg.panel"}
+                      shadow={isSelected || isConnected ? "sm" : "xs"}
+                      transition="border-color 0.2s ease, background 0.2s ease"
+                      onClick={() =>
+                        setFocusedFacetName((current) =>
+                          current === facet.name ? null : facet.name,
+                        )
+                      }
+                    >
+                      <Card.Body>
+                        <Stack gap="3">
+                          <HStack justify="space-between" align="start" gap="3">
+                            <Stack gap="1" align="start">
+                              <Badge
+                                colorPalette={facet.colorPalette}
+                                variant="surface"
+                              >
+                                {facet.displayName}
+                              </Badge>
+                              <Text
+                                color="fg.muted"
+                                fontFamily="var(--font-geist-mono)"
+                                fontSize="xs"
+                              >
+                                {facet.name}
+                              </Text>
                             </Stack>
-                          </>
-                        ) : null}
-                      </Stack>
-                    </Card.Body>
-                  </Card.Root>
-                );
-              })}
+
+                            {isSelected ? (
+                              <Badge colorPalette="blue" variant="solid">
+                                Focused
+                              </Badge>
+                            ) : null}
+                          </HStack>
+
+                          {facetRelationships.length > 0 ? (
+                            <>
+                              <Separator />
+                              <Stack gap="2">
+                                {facetRelationships.map((relationship) => (
+                                  <HStack
+                                    key={`${facet.name}-${relationship.direction}-${relationship.source}`}
+                                    align="start"
+                                    gap="2"
+                                    flexWrap="wrap"
+                                  >
+                                    <Badge
+                                      colorPalette={
+                                        relationship.direction === "uses"
+                                          ? "green"
+                                          : "orange"
+                                      }
+                                      variant="subtle"
+                                    >
+                                      {relationship.direction === "uses"
+                                        ? "Selected uses this"
+                                        : "Uses selected"}
+                                    </Badge>
+                                    {relationship.type ? (
+                                      <Badge variant="outline">
+                                        {relationship.type}
+                                      </Badge>
+                                    ) : null}
+                                    <Text color="fg.muted" fontSize="sm">
+                                      {relationship.relationship}
+                                    </Text>
+                                  </HStack>
+                                ))}
+                              </Stack>
+                            </>
+                          ) : null}
+                        </Stack>
+                      </Card.Body>
+                    </Card.Root>
+                  );
+                })}
+              </Stack>
             </Stack>
-          </Stack>
-        ))}
+          );
+        })}
       </Stack>
     </Stack>
   );

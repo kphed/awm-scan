@@ -107,6 +107,12 @@ test("architecture page renders progressive disclosure without browser errors", 
       })
       .first(),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Clear dependency filter" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Token Status Controls" }),
+  ).toHaveCount(0);
   await page.keyboard.press("Escape");
 
   await page.getByRole("tab", { name: "Lifecycle Flows" }).click();
