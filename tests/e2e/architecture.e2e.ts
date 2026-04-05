@@ -88,7 +88,11 @@ test("architecture page renders progressive disclosure without browser errors", 
     page.getByText("Select a module to explore its capabilities"),
   ).toBeHidden();
   await expect(
-    page.locator("table").getByText("TOKENIZATION_AGENT", { exact: true }),
+    page
+      .locator("table")
+      .first()
+      .getByText("TOKENIZATION_AGENT", { exact: true })
+      .first(),
   ).toBeVisible();
   await page.getByLabel("Open Token Transfers details for PUBLIC").click();
   await expect(
@@ -105,9 +109,12 @@ test("architecture page renders progressive disclosure without browser errors", 
   ).toBeVisible();
   await expect(
     page
-      .getByText("Executes approved burns via the burn module", {
-        exact: false,
-      })
+      .getByText(
+        "Approved or rejected staged burns mutate shared ERC-20 balances and supply",
+        {
+          exact: false,
+        },
+      )
       .first(),
   ).toBeVisible();
   await expect(
@@ -162,7 +169,7 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
     page
       .getByRole("dialog")
       .getByText(
-        "Implements the core ERC-20 balances, transfers, approvals, and burns.",
+        "Implements the core ERC-20 balance, transfer, and approval flows, while stop codes gate movement and burner-address transfers create pending redemption requests.",
         {
           exact: true,
         },
@@ -180,7 +187,7 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
     page
       .getByRole("dialog")
       .getByText(
-        "Pauses or unpauses the fund token under timelocked governance controls.",
+        "Pauses the fund token directly as TOKEN_ADMIN and unpauses it through the timelock execution path.",
         {
           exact: true,
         },

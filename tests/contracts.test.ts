@@ -110,6 +110,98 @@ describe("contracts data layer", () => {
     }
   });
 
+  test("reflects the approved registry audit corrections", () => {
+    const burnRespondableFacet = FACET_REGISTRY.get("BurnRespondableFacet");
+    const erc20Facet = FACET_REGISTRY.get(
+      "ERC20FacetTransferBurnableStoppable",
+    );
+    const managedTokenFacet = FACET_REGISTRY.get(
+      "ManagedTokenFacetTimelockable",
+    );
+    const managedAccountFacet = FACET_REGISTRY.get("ManagedAccountFacet");
+    const timelockableFacet = FACET_REGISTRY.get("TimelockableFacet");
+    const pausableFacet = FACET_REGISTRY.get("PausableFacetTimelockable");
+
+    expect(burnRespondableFacet?.dependencies).toEqual([
+      {
+        target: "BurnPreparableFacet",
+        relationship: "Approves or rejects requests created by intake",
+        direction: "uses",
+        type: "workflow",
+      },
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship:
+          "Approved or rejected staged burns mutate shared ERC-20 balances and supply",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ]);
+    expect(erc20Facet).toMatchObject({
+      businessSummary:
+        "Implements the core ERC-20 balance, transfer, and approval flows, while stop codes gate movement and burner-address transfers create pending redemption requests.",
+      dependencies: [
+        {
+          target: "StopCodesFacet",
+          relationship:
+            "Reads per-account stop codes before allowing transfers",
+          direction: "uses",
+          type: "shared-state",
+        },
+      ],
+    });
+    expect(managedTokenFacet).toMatchObject({
+      businessSummary:
+        "Re-activates the fund token through a timelocked control path while direct deactivation remains on the token-admin surface.",
+      operationalImpact:
+        "Governance can delay re-enabling the token after an incident, but token admins can still deactivate immediately when risk appears.",
+      dependencies: [
+        {
+          target: "TimelockableFacet",
+          relationship:
+            "activateToken executes only after a queued timelock transaction",
+          direction: "uses",
+          type: "governance",
+        },
+      ],
+    });
+    expect(managedAccountFacet?.dependencies).toEqual([
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship:
+          "Locks, force-transfers, and forced burns mutate the shared ERC-20 ledger",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ]);
+    expect(timelockableFacet?.requiredRoles).toEqual([
+      "TOKEN_ADMIN",
+      "ACCOUNT_ADMIN",
+      "TOKENIZATION_AGENT",
+    ]);
+    expect(pausableFacet).toMatchObject({
+      businessSummary:
+        "Pauses the fund token directly as TOKEN_ADMIN and unpauses it through the timelock execution path.",
+      operationalImpact:
+        "Operations can halt activity immediately during an incident, while re-enabling the token still waits for the queued governance window.",
+      dependencies: [
+        {
+          target: "TimelockableFacet",
+          relationship: "unpause executes only after the timelock delay",
+          direction: "uses",
+          type: "governance",
+        },
+        {
+          target: "ERC20FacetTransferBurnableStoppable",
+          relationship:
+            "The shared pause rail halts ERC-20 transfer and approval flows",
+          direction: "used-by",
+          type: "shared-state",
+        },
+      ],
+    });
+  });
+
   test("keeps lifecycle flow facet references aligned with assembled facets", () => {
     const facetsByName = new Map(
       assembleArchitectureData()
@@ -166,6 +258,11 @@ describe("contracts data layer", () => {
     expect(Array.from(matrix.get("PUBLIC") ?? [])).toEqual([
       "ERC20FacetTransferBurnableStoppable",
     ]);
+    expect(matrix.get("TOKEN_ADMIN")?.has("TimelockableFacet")).toBe(true);
+    expect(matrix.get("ACCOUNT_ADMIN")?.has("TimelockableFacet")).toBe(true);
+    expect(matrix.get("TOKENIZATION_AGENT")?.has("TimelockableFacet")).toBe(
+      true,
+    );
     expect(writeMethodsByFacet.get("MintableFacet")).toContain("mint");
   });
 });

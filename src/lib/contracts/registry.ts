@@ -72,10 +72,11 @@ const FACET_METADATA: FacetMetadata[] = [
         type: "workflow",
       },
       {
-        target: "BurnableFacet",
-        relationship: "Executes approved burns via the burn module",
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship:
+          "Approved or rejected staged burns mutate shared ERC-20 balances and supply",
         direction: "uses",
-        type: "workflow",
+        type: "shared-state",
       },
     ],
   },
@@ -84,11 +85,19 @@ const FACET_METADATA: FacetMetadata[] = [
     displayName: "Token Transfers",
     cluster: "fund-token",
     businessSummary:
-      "Implements the core ERC-20 balances, transfers, approvals, and burns.",
+      "Implements the core ERC-20 balance, transfer, and approval flows, while stop codes gate movement and burner-address transfers create pending redemption requests.",
     operationalImpact:
       "This is the investor-facing token ledger. Wallet balances, transfers, and allowance-based operations all flow through this module.",
     eipReference: "EIP-20",
     requiredRoles: [],
+    dependencies: [
+      {
+        target: "StopCodesFacet",
+        relationship: "Reads per-account stop codes before allowing transfers",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ],
   },
   {
     name: "TokenMetadataFacet",
@@ -105,10 +114,19 @@ const FACET_METADATA: FacetMetadata[] = [
     displayName: "Token Status Controls",
     cluster: "fund-token",
     businessSummary:
-      "Activates or deactivates the fund token behind a timelocked control path.",
+      "Re-activates the fund token through a timelocked control path while direct deactivation remains on the token-admin surface.",
     operationalImpact:
-      "This module lets governance freeze or re-enable the token as an operating instrument without changing balances.",
+      "Governance can delay re-enabling the token after an incident, but token admins can still deactivate immediately when risk appears.",
     requiredRoles: ["TOKEN_ADMIN"],
+    dependencies: [
+      {
+        target: "TimelockableFacet",
+        relationship:
+          "activateToken executes only after a queued timelock transaction",
+        direction: "uses",
+        type: "governance",
+      },
+    ],
   },
   {
     name: "ManagedAccountFacet",
@@ -121,14 +139,9 @@ const FACET_METADATA: FacetMetadata[] = [
     requiredRoles: ["ACCOUNT_ADMIN"],
     dependencies: [
       {
-        target: "StopCodesFacet",
-        relationship: "Account-level restrictions are enforced via stop codes",
-        direction: "uses",
-        type: "workflow",
-      },
-      {
         target: "ERC20FacetTransferBurnableStoppable",
-        relationship: "Force-transfers and forced burns modify ERC-20 balances",
+        relationship:
+          "Locks, force-transfers, and forced burns mutate the shared ERC-20 ledger",
         direction: "uses",
         type: "shared-state",
       },
@@ -189,30 +202,29 @@ const FACET_METADATA: FacetMetadata[] = [
       "Queues, revokes, and executes delayed administrative actions.",
     operationalImpact:
       "This is the operational safety rail that forces sensitive actions through a review window before they can take effect.",
-    requiredRoles: ["DEFAULT_ADMIN_ROLE"],
+    requiredRoles: ["TOKEN_ADMIN", "ACCOUNT_ADMIN", "TOKENIZATION_AGENT"],
   },
   {
     name: "PausableFacetTimelockable",
     displayName: "Emergency Pause",
     cluster: "governance-admin",
     businessSummary:
-      "Pauses or unpauses the fund token under timelocked governance controls.",
+      "Pauses the fund token directly as TOKEN_ADMIN and unpauses it through the timelock execution path.",
     operationalImpact:
-      "This is the emergency brake for the token, allowing operations to halt activity during incidents and re-enable it once risk is addressed.",
+      "Operations can halt activity immediately during an incident, while re-enabling the token still waits for the queued governance window.",
     requiredRoles: ["TOKEN_ADMIN"],
     dependencies: [
       {
         target: "TimelockableFacet",
-        relationship:
-          "Pause and unpause actions move through the timelock rail",
+        relationship: "unpause executes only after the timelock delay",
         direction: "uses",
         type: "governance",
       },
       {
         target: "ERC20FacetTransferBurnableStoppable",
         relationship:
-          "Pausing halts ERC-20 token transfers and balance updates",
-        direction: "uses",
+          "The shared pause rail halts ERC-20 transfer and approval flows",
+        direction: "used-by",
         type: "shared-state",
       },
     ],
