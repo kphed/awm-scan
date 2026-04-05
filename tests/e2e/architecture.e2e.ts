@@ -80,6 +80,7 @@ test("architecture page renders progressive disclosure without browser errors", 
   await expect(
     page.getByText("Registry-authored responsibility view", { exact: false }),
   ).toBeVisible();
+  await expect(page.locator("table")).toHaveCount(5);
   await expect(
     page.getByText("Select a module to explore its capabilities"),
   ).toBeHidden();

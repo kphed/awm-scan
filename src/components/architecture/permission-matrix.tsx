@@ -26,6 +26,24 @@ const PermissionMatrix = ({ data, onSelectFacet }: PermissionMatrixProps) => {
 
     return map;
   }, [data]);
+  const clusterSections = useMemo(
+    () =>
+      data.clusters.map((cluster) => {
+        const facets = matrixData.facets.filter(
+          (facet) => facet.cluster === cluster.id,
+        );
+        const roles = matrixData.roles.filter((role) =>
+          facets.some((facet) => matrixData.matrix.get(role)?.has(facet.name)),
+        );
+
+        return {
+          ...cluster,
+          facets,
+          roles,
+        };
+      }),
+    [data, matrixData],
+  );
 
   return (
     <Stack gap="4">
@@ -35,136 +53,141 @@ const PermissionMatrix = ({ data, onSelectFacet }: PermissionMatrixProps) => {
         click it to open the shared module details.
       </Text>
 
-      <Table.ScrollArea
-        borderWidth="1px"
-        borderColor="border.subtle"
-        rounded="xl"
-      >
-        <Table.Root interactive size="sm" stickyHeader variant="outline">
-          <Table.Header>
-            <Table.Row bg="bg.subtle">
-              <Table.ColumnHeader
-                rowSpan={2}
-                minW="14rem"
-                position="sticky"
-                left="0"
-                zIndex="2"
-                bg="bg.canvas"
-                verticalAlign="middle"
-              >
-                Role
-              </Table.ColumnHeader>
-              {data.clusters.map((cluster) => (
-                <Table.ColumnHeader
-                  key={cluster.id}
-                  colSpan={cluster.facets.length}
-                  textAlign="center"
-                >
-                  {cluster.label}
-                </Table.ColumnHeader>
-              ))}
-            </Table.Row>
-            <Table.Row bg="bg.subtle">
-              {matrixData.facets.map((facet) => (
-                <Table.ColumnHeader key={facet.name} minW="12rem">
-                  <Text fontSize="xs" fontWeight="semibold" whiteSpace="normal">
-                    {facet.displayName}
-                  </Text>
-                </Table.ColumnHeader>
-              ))}
-            </Table.Row>
-          </Table.Header>
+      <Stack gap="6">
+        {clusterSections.map((cluster) => (
+          <Stack key={cluster.id} gap="3">
+            <Stack gap="1">
+              <Text fontWeight="semibold">{cluster.label}</Text>
+              <Text color="fg.muted" fontSize="sm">
+                {cluster.subtitle}
+              </Text>
+            </Stack>
 
-          <Table.Body>
-            {matrixData.roles.map((role) => (
-              <Table.Row key={role}>
-                <Table.Cell
-                  position="sticky"
-                  left="0"
-                  zIndex="1"
-                  bg="bg.canvas"
-                  fontWeight="medium"
-                >
-                  <Tooltip
-                    content={
-                      ROLE_DESCRIPTIONS[role] ?? "Role description unavailable."
-                    }
-                    contentProps={{ maxW: "xs" }}
-                    openDelay={200}
-                    showArrow
-                  >
-                    <Badge variant="surface">{role}</Badge>
-                  </Tooltip>
-                </Table.Cell>
-
-                {matrixData.facets.map((facet) => {
-                  const writeMethods =
-                    matrixData.writeMethodsByFacet.get(facet.name) ?? [];
-                  const hasPermission =
-                    matrixData.matrix.get(role)?.has(facet.name) ?? false;
-                  const fullFacet = facetLookup.get(facet.name);
-
-                  return (
-                    <Table.Cell
-                      key={`${role}-${facet.name}`}
-                      textAlign="center"
+            <Table.ScrollArea
+              borderWidth="1px"
+              borderColor="border.subtle"
+              rounded="xl"
+            >
+              <Table.Root interactive size="sm" stickyHeader variant="outline">
+                <Table.Header>
+                  <Table.Row bg="bg.subtle">
+                    <Table.ColumnHeader
+                      minW="14rem"
+                      position="sticky"
+                      left="0"
+                      zIndex="2"
+                      bg="bg.canvas"
                     >
-                      {hasPermission && fullFacet ? (
+                      Role
+                    </Table.ColumnHeader>
+                    {cluster.facets.map((facet) => (
+                      <Table.ColumnHeader key={facet.name} minW="12rem">
+                        <Text
+                          fontSize="xs"
+                          fontWeight="semibold"
+                          whiteSpace="normal"
+                        >
+                          {facet.displayName}
+                        </Text>
+                      </Table.ColumnHeader>
+                    ))}
+                  </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                  {cluster.roles.map((role) => (
+                    <Table.Row key={`${cluster.id}-${role}`}>
+                      <Table.Cell
+                        position="sticky"
+                        left="0"
+                        zIndex="1"
+                        bg="bg.canvas"
+                        fontWeight="medium"
+                      >
                         <Tooltip
                           content={
-                            <Stack gap="2">
-                              <Text fontWeight="medium">
-                                {facet.displayName}
-                              </Text>
-                              {writeMethods.map((method) => (
-                                <Code
-                                  key={`${facet.name}-${method}`}
-                                  fontSize="xs"
-                                >
-                                  {method}()
-                                </Code>
-                              ))}
-                            </Stack>
+                            ROLE_DESCRIPTIONS[role] ??
+                            "Role description unavailable."
                           }
                           contentProps={{ maxW: "xs" }}
-                          openDelay={150}
+                          openDelay={200}
                           showArrow
                         >
-                          <Box
-                            as="button"
-                            display="inline-flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            aria-label={`Open ${facet.displayName} details for ${role}`}
-                            onClick={() => onSelectFacet(fullFacet)}
-                          >
-                            <Badge
-                              colorPalette={facet.colorPalette}
-                              variant="solid"
-                              borderRadius="full"
-                              minW="5"
-                              h="5"
-                              display="inline-flex"
-                              alignItems="center"
-                              justifyContent="center"
-                              fontSize="sm"
-                              lineHeight="1"
-                            >
-                              •
-                            </Badge>
-                          </Box>
+                          <Badge variant="surface">{role}</Badge>
                         </Tooltip>
-                      ) : (
-                        <Text color="fg.subtle">-</Text>
-                      )}
-                    </Table.Cell>
-                  );
-                })}
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Table.ScrollArea>
+                      </Table.Cell>
+
+                      {cluster.facets.map((facet) => {
+                        const writeMethods =
+                          matrixData.writeMethodsByFacet.get(facet.name) ?? [];
+                        const hasPermission =
+                          matrixData.matrix.get(role)?.has(facet.name) ?? false;
+                        const fullFacet = facetLookup.get(facet.name);
+
+                        return (
+                          <Table.Cell
+                            key={`${cluster.id}-${role}-${facet.name}`}
+                            textAlign="center"
+                          >
+                            {hasPermission && fullFacet ? (
+                              <Tooltip
+                                content={
+                                  <Stack gap="2">
+                                    <Text fontWeight="medium">
+                                      {facet.displayName}
+                                    </Text>
+                                    {writeMethods.map((method) => (
+                                      <Code
+                                        key={`${facet.name}-${method}`}
+                                        fontSize="xs"
+                                      >
+                                        {method}()
+                                      </Code>
+                                    ))}
+                                  </Stack>
+                                }
+                                contentProps={{ maxW: "xs" }}
+                                openDelay={150}
+                                showArrow
+                              >
+                                <Box
+                                  as="button"
+                                  display="inline-flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                  aria-label={`Open ${facet.displayName} details for ${role}`}
+                                  onClick={() => onSelectFacet(fullFacet)}
+                                >
+                                  <Badge
+                                    colorPalette={facet.colorPalette}
+                                    variant="solid"
+                                    borderRadius="full"
+                                    minW="5"
+                                    h="5"
+                                    display="inline-flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    fontSize="sm"
+                                    lineHeight="1"
+                                  >
+                                    •
+                                  </Badge>
+                                </Box>
+                              </Tooltip>
+                            ) : (
+                              <Text color="fg.subtle">-</Text>
+                            )}
+                          </Table.Cell>
+                        );
+                      })}
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table.Root>
+            </Table.ScrollArea>
+          </Stack>
+        ))}
+      </Stack>
     </Stack>
   );
 };
