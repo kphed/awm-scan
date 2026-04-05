@@ -9,7 +9,14 @@ export function Provider(props: ColorModeProviderProps) {
   return (
     // Keep the next-themes bootstrap script outside Chakra's Emotion output so
     // the server and client hydrate the provider tree in the same order.
-    <ColorModeProvider {...colorModeProps}>
+    <ColorModeProvider
+      {...colorModeProps}
+      // Lock the entire app to light mode regardless of OS preference or any
+      // stale theme value persisted in local storage.
+      forcedTheme="light"
+      defaultTheme="light"
+      enableSystem={false}
+    >
       <ChakraProvider value={defaultSystem}>{children}</ChakraProvider>
     </ColorModeProvider>
   );

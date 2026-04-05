@@ -20,4 +20,17 @@ describe("Provider", () => {
     expect(styleIndex).toBeGreaterThanOrEqual(0)
     expect(scriptIndex).toBeLessThan(styleIndex)
   })
+
+  test("boots the app in forced light mode", () => {
+    const html = renderToString(
+      <Provider>
+        <div>Hello</div>
+      </Provider>,
+    )
+
+    // The root provider should lock the next-themes bootstrap script to light
+    // mode so browser preferences and stale local storage cannot flip the app.
+    expect(html).toContain('"theme","light","light"')
+    expect(html).not.toContain('"theme","system",null')
+  })
 })
