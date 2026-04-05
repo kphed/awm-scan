@@ -1,0 +1,33 @@
+{
+  "name": "awm-scan",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "tsc -p ./tsconfig.lint.json --noEmit && bunx eslint 'src/**/*.{ts,tsx}' && bunx prettier 'src/**/*.{ts,tsx}' --check",
+    "format": "bunx prettier 'src/**/*.{ts,tsx}' --write",
+    "test": "bun test",
+    "test:e2e": "bunx playwright test",
+    "test:e2e:accept": "bunx playwright test --update-snapshots",
+    "test:e2e:update": "bun run test:e2e:accept && bun run test:e2e"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^3.34.0",
+    "next": "16.2.2",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.2",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
