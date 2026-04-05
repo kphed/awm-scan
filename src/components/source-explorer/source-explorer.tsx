@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import type {
   ImportGraphEntry,
   LineRange,
@@ -72,6 +72,32 @@ const SourceExplorer = ({
   const currentOwner = resolvedPath ? sourceOwners[resolvedPath] : undefined;
   const references = resolvedPath ? importGraph[resolvedPath] : undefined;
   const pathSegments = currentFile?.path.split("/") ?? [];
+
+  useEffect(() => {
+    if (!currentFile || !lineRange) {
+      return;
+    }
+
+    // Deep-linked line ranges should land with the first highlighted line
+    // tucked beneath the fixed app navigation instead of below the fold.
+    const frame = window.requestAnimationFrame(() => {
+      const lineElement = document.getElementById(`line-${lineRange.start}`);
+
+      if (!lineElement) {
+        return;
+      }
+
+      const targetTop =
+        lineElement.getBoundingClientRect().top + window.scrollY - 112;
+
+      window.scrollTo({
+        top: Math.max(targetTop, 0),
+        behavior: "auto",
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [currentFile, lineRange]);
 
   if (!currentFile) {
     return (

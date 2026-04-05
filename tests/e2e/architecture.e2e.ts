@@ -203,6 +203,7 @@ test("source explorer renders file navigation and deep-linked line context", asy
   page,
 }) => {
   await page.goto("/source/facets/MintableFacet.sol?line=49-65");
+  const line49 = page.locator("#line-49");
 
   await expect(page.getByRole("link", { name: "Source" })).toHaveAttribute(
     "aria-current",
@@ -225,6 +226,14 @@ test("source explorer renders file navigation and deep-linked line context", asy
     page.getByRole("link", { name: /Open on Etherscan/i }),
   ).toBeVisible();
   await expect(page.getByPlaceholder("Search source files")).toBeVisible();
+  await expect(line49).toBeVisible();
+  await expect
+    .poll(async () => {
+      return line49.evaluate((element) =>
+        Math.round(element.getBoundingClientRect().top),
+      );
+    })
+    .toBeLessThan(220);
 });
 
 test("architecture page keeps the mobile drawer working from expansion tabs", async ({
