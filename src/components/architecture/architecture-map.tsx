@@ -9,14 +9,18 @@ import {
   Link,
   Portal,
   Stack,
+  Tabs,
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { ArchitectureData, ArchitectureFacet } from "@/lib/contracts";
 import ClusterGroup from "./cluster-group";
+import DependencyView from "./dependency-view";
 import DiamondHeader from "./diamond-header";
 import FacetSidebar from "./facet-sidebar";
+import LifecycleFlows from "./lifecycle-flows";
+import PermissionMatrix from "./permission-matrix";
 
 interface ArchitectureMapProps {
   data: ArchitectureData;
@@ -27,6 +31,9 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
     null,
   );
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
+  const handleFacetSelect = useCallback((facet: ArchitectureFacet | null) => {
+    setSelectedFacet(facet);
+  }, []);
 
   return (
     <>
@@ -62,14 +69,53 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
                 specific capability.
               </Text>
             </Box>
-            {data.clusters.map((cluster) => (
-              <ClusterGroup
-                key={cluster.id}
-                cluster={cluster}
-                selectedFacet={selectedFacet}
-                onSelect={setSelectedFacet}
-              />
-            ))}
+            <Tabs.Root
+              defaultValue="map"
+              lazyMount
+              unmountOnExit
+              variant="line"
+            >
+              <Tabs.List overflowX="auto" overflowY="hidden">
+                <Tabs.Trigger value="map">Module Map</Tabs.Trigger>
+                <Tabs.Trigger value="permissions">
+                  Permission Matrix
+                </Tabs.Trigger>
+                <Tabs.Trigger value="dependencies">Dependencies</Tabs.Trigger>
+                <Tabs.Trigger value="flows">Lifecycle Flows</Tabs.Trigger>
+              </Tabs.List>
+
+              <Tabs.Content value="map" pt="6">
+                <Stack gap="8">
+                  {data.clusters.map((cluster) => (
+                    <ClusterGroup
+                      key={cluster.id}
+                      cluster={cluster}
+                      selectedFacet={selectedFacet}
+                      onSelect={setSelectedFacet}
+                    />
+                  ))}
+                </Stack>
+              </Tabs.Content>
+
+              <Tabs.Content value="permissions" pt="6">
+                <PermissionMatrix
+                  data={data}
+                  onSelectFacet={handleFacetSelect}
+                />
+              </Tabs.Content>
+
+              <Tabs.Content value="dependencies" pt="6">
+                <DependencyView
+                  data={data}
+                  selectedFacet={selectedFacet}
+                  onSelectFacet={handleFacetSelect}
+                />
+              </Tabs.Content>
+
+              <Tabs.Content value="flows" pt="6">
+                <LifecycleFlows data={data} onSelectFacet={handleFacetSelect} />
+              </Tabs.Content>
+            </Tabs.Root>
           </Stack>
         </Box>
 

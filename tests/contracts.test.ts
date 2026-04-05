@@ -2,11 +2,13 @@ import { describe, expect, test } from "bun:test";
 import burnableSource from "../src/contracts/source/BurnableFacet.json";
 import {
   assembleArchitectureData,
+  derivePermissionMatrix,
   extractPrimarySourceCode,
   getEventDescription,
   getAllFacets,
   getMethodDescription,
 } from "../src/lib/contracts";
+import { LIFECYCLE_FLOWS } from "../src/lib/contracts/flows";
 import {
   BUSINESS_CLUSTERS,
   FACET_REGISTRY,
@@ -98,5 +100,72 @@ describe("contracts data layer", () => {
       getEventDescription("Burn(bytes32,address,address,uint256)"),
     ).toContain("burn");
     expect(getMethodDescription("owner()")).toBeNull();
+  });
+
+  test("keeps dependency targets aligned with the facet registry", () => {
+    for (const metadata of FACET_REGISTRY.values()) {
+      for (const dependency of metadata.dependencies ?? []) {
+        expect(FACET_REGISTRY.has(dependency.target)).toBe(true);
+      }
+    }
+  });
+
+  test("keeps lifecycle flow facet references aligned with assembled facets", () => {
+    const facetsByName = new Map(
+      assembleArchitectureData()
+        .clusters.flatMap((cluster) => cluster.facets)
+        .map((facet) => [facet.name, facet]),
+    );
+
+    for (const flow of LIFECYCLE_FLOWS) {
+      for (const step of flow.steps) {
+        expect(
+          facetsByName.has(step.facetName),
+          `${flow.id}:${step.label}:${step.facetName}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  test("keeps lifecycle flow method references aligned with facet ABIs", () => {
+    const facetsByName = new Map(
+      assembleArchitectureData()
+        .clusters.flatMap((cluster) => cluster.facets)
+        .map((facet) => [facet.name, facet]),
+    );
+
+    for (const flow of LIFECYCLE_FLOWS) {
+      for (const step of flow.steps) {
+        if (!step.methodName) {
+          continue;
+        }
+
+        const facet = facetsByName.get(step.facetName);
+        const facetMethods = [
+          ...(facet?.readMethods ?? []),
+          ...(facet?.writeMethods ?? []),
+        ].map((method) => method.name);
+
+        expect(
+          facetMethods,
+          `${flow.id}:${step.label}:${step.methodName}`,
+        ).toContain(step.methodName);
+      }
+    }
+  });
+
+  test("orders permission-matrix roles alphabetically with PUBLIC last", () => {
+    const { roles, matrix, writeMethodsByFacet } = derivePermissionMatrix(
+      assembleArchitectureData(),
+    );
+
+    expect(roles.at(-1)).toBe("PUBLIC");
+    expect(roles.slice(0, -1)).toEqual(
+      [...roles.slice(0, -1)].sort((left, right) => left.localeCompare(right)),
+    );
+    expect(Array.from(matrix.get("PUBLIC") ?? [])).toEqual([
+      "ERC20FacetTransferBurnableStoppable",
+    ]);
+    expect(writeMethodsByFacet.get("MintableFacet")).toContain("mint");
   });
 });

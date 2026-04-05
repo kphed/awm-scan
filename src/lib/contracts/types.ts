@@ -34,6 +34,13 @@ export type BusinessCluster =
   | "governance-admin"
   | "protocol-internals";
 
+export interface FacetDependency {
+  target: string;
+  relationship: string;
+  direction: "uses" | "used-by";
+  type?: "workflow" | "shared-state" | "governance" | "introspection";
+}
+
 export interface FacetMetadata {
   name: string;
   displayName: string;
@@ -42,6 +49,7 @@ export interface FacetMetadata {
   operationalImpact: string;
   eipReference?: string;
   requiredRoles: string[];
+  dependencies?: FacetDependency[];
 }
 
 export interface ClusterDefinition {

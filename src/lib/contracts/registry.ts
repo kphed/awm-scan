@@ -10,6 +10,14 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the fund's intake rail. Once capital clears and the subscription is approved, operations can mint the matching token position for the investor.",
     requiredRoles: ["TOKENIZATION_AGENT"],
+    dependencies: [
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship: "Minted tokens become ERC-20 balances",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ],
   },
   {
     name: "BurnableFacet",
@@ -20,6 +28,14 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This module handles the fast path for taking supply out of circulation without a staged approval workflow.",
     requiredRoles: ["TOKENIZATION_AGENT"],
+    dependencies: [
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship: "Burns reduce ERC-20 supply and balances",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ],
   },
   {
     name: "BurnPreparableFacet",
@@ -30,6 +46,14 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the queueing step for gated redemptions, giving operations an audit trail before capital leaves the fund.",
     requiredRoles: ["TOKENIZATION_AGENT"],
+    dependencies: [
+      {
+        target: "BurnRespondableFacet",
+        relationship: "Queued requests are resolved by the approval facet",
+        direction: "uses",
+        type: "workflow",
+      },
+    ],
   },
   {
     name: "BurnRespondableFacet",
@@ -40,6 +64,20 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the control point that mirrors a fund redemption review queue, allowing operations to approve or reject exits before burning tokens.",
     requiredRoles: ["TOKENIZATION_AGENT"],
+    dependencies: [
+      {
+        target: "BurnPreparableFacet",
+        relationship: "Approves or rejects requests created by intake",
+        direction: "uses",
+        type: "workflow",
+      },
+      {
+        target: "BurnableFacet",
+        relationship: "Executes approved burns via the burn module",
+        direction: "uses",
+        type: "workflow",
+      },
+    ],
   },
   {
     name: "ERC20FacetTransferBurnableStoppable",
@@ -81,6 +119,20 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the compliance operations console for investor accounts, covering freezes, seizures, remediation, and batch enforcement flows.",
     requiredRoles: ["ACCOUNT_ADMIN"],
+    dependencies: [
+      {
+        target: "StopCodesFacet",
+        relationship: "Account-level restrictions are enforced via stop codes",
+        direction: "uses",
+        type: "workflow",
+      },
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship: "Force-transfers and forced burns modify ERC-20 balances",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ],
   },
   {
     name: "StopCodesFacet",
@@ -102,6 +154,14 @@ const FACET_METADATA: FacetMetadata[] = [
       "This is the top-level governance handoff mechanism for who ultimately controls the fund's on-chain contract shell.",
     eipReference: "EIP-173",
     requiredRoles: ["OWNER"],
+    dependencies: [
+      {
+        target: "TimelockableFacet",
+        relationship: "Ownership transfers go through timelock delay",
+        direction: "uses",
+        type: "governance",
+      },
+    ],
   },
   {
     name: "AccessControlFacetTimelockable",
@@ -112,6 +172,14 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the permissioning layer for the fund. It determines who can mint, manage accounts, pause the token, and administer other controls.",
     requiredRoles: ["DEFAULT_ADMIN_ROLE"],
+    dependencies: [
+      {
+        target: "TimelockableFacet",
+        relationship: "Role changes go through timelock delay",
+        direction: "uses",
+        type: "governance",
+      },
+    ],
   },
   {
     name: "TimelockableFacet",
@@ -132,6 +200,22 @@ const FACET_METADATA: FacetMetadata[] = [
     operationalImpact:
       "This is the emergency brake for the token, allowing operations to halt activity during incidents and re-enable it once risk is addressed.",
     requiredRoles: ["TOKEN_ADMIN"],
+    dependencies: [
+      {
+        target: "TimelockableFacet",
+        relationship:
+          "Pause and unpause actions move through the timelock rail",
+        direction: "uses",
+        type: "governance",
+      },
+      {
+        target: "ERC20FacetTransferBurnableStoppable",
+        relationship:
+          "Pausing halts ERC-20 token transfers and balance updates",
+        direction: "uses",
+        type: "shared-state",
+      },
+    ],
   },
   {
     name: "DiamondCutFacet",
@@ -143,6 +227,14 @@ const FACET_METADATA: FacetMetadata[] = [
       "This is the upgrade mechanism that changes which modules the MONY Fund Token can delegate into.",
     eipReference: "EIP-2535",
     requiredRoles: ["OWNER"],
+    dependencies: [
+      {
+        target: "DiamondLoupeFacet",
+        relationship: "Loupe reflects the current module set after a cut",
+        direction: "uses",
+        type: "introspection",
+      },
+    ],
   },
   {
     name: "DiamondLoupeFacet",
