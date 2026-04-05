@@ -1,0 +1,225 @@
+import type { ClusterDefinition, FacetMetadata } from "./types";
+
+const FACET_METADATA: FacetMetadata[] = [
+  {
+    name: "MintableFacet",
+    displayName: "Subscription Processing",
+    cluster: "subscriptions-redemptions",
+    businessSummary:
+      "Creates MONY fund tokens when new subscription capital is accepted.",
+    operationalImpact:
+      "This is the fund's intake rail. Once capital clears and the subscription is approved, operations can mint the matching token position for the investor.",
+    requiredRoles: ["TOKENIZATION_AGENT"],
+  },
+  {
+    name: "BurnableFacet",
+    displayName: "Immediate Redemptions",
+    cluster: "subscriptions-redemptions",
+    businessSummary:
+      "Executes direct token burns when an authorized redemption request can settle immediately.",
+    operationalImpact:
+      "This module handles the fast path for taking supply out of circulation without a staged approval workflow.",
+    requiredRoles: ["TOKENIZATION_AGENT"],
+  },
+  {
+    name: "BurnPreparableFacet",
+    displayName: "Redemption Intake",
+    cluster: "subscriptions-redemptions",
+    businessSummary:
+      "Creates pending redemption requests before supply is reduced.",
+    operationalImpact:
+      "This is the queueing step for gated redemptions, giving operations an audit trail before capital leaves the fund.",
+    requiredRoles: ["TOKENIZATION_AGENT"],
+  },
+  {
+    name: "BurnRespondableFacet",
+    displayName: "Redemption Approval",
+    cluster: "subscriptions-redemptions",
+    businessSummary:
+      "Approves, rejects, and inspects pending redemption requests.",
+    operationalImpact:
+      "This is the control point that mirrors a fund redemption review queue, allowing operations to approve or reject exits before burning tokens.",
+    requiredRoles: ["TOKENIZATION_AGENT"],
+  },
+  {
+    name: "ERC20FacetTransferBurnableStoppable",
+    displayName: "Token Transfers",
+    cluster: "fund-token",
+    businessSummary:
+      "Implements the core ERC-20 balances, transfers, approvals, and burns.",
+    operationalImpact:
+      "This is the investor-facing token ledger. Wallet balances, transfers, and allowance-based operations all flow through this module.",
+    eipReference: "EIP-20",
+    requiredRoles: [],
+  },
+  {
+    name: "TokenMetadataFacet",
+    displayName: "Token Identity",
+    cluster: "fund-token",
+    businessSummary:
+      "Stores and updates the token metadata that describes the fund asset.",
+    operationalImpact:
+      "This is the reference layer for business-facing token details that downstream systems and interfaces display.",
+    requiredRoles: ["TOKEN_ADMIN"],
+  },
+  {
+    name: "ManagedTokenFacetTimelockable",
+    displayName: "Token Status Controls",
+    cluster: "fund-token",
+    businessSummary:
+      "Activates or deactivates the fund token behind a timelocked control path.",
+    operationalImpact:
+      "This module lets governance freeze or re-enable the token as an operating instrument without changing balances.",
+    requiredRoles: ["TOKEN_ADMIN"],
+  },
+  {
+    name: "ManagedAccountFacet",
+    displayName: "Account Controls",
+    cluster: "investor-compliance",
+    businessSummary:
+      "Applies account-level actions such as activation, locks, force transfers, and forced burns.",
+    operationalImpact:
+      "This is the compliance operations console for investor accounts, covering freezes, seizures, remediation, and batch enforcement flows.",
+    requiredRoles: ["ACCOUNT_ADMIN"],
+  },
+  {
+    name: "StopCodesFacet",
+    displayName: "Transfer Restrictions",
+    cluster: "investor-compliance",
+    businessSummary:
+      "Sets per-account stop-code restrictions for subscriptions, transfers, and redemptions.",
+    operationalImpact:
+      "This module gives compliance teams fine-grained per-investor controls instead of relying on a single global pause switch.",
+    requiredRoles: ["ACCOUNT_ADMIN"],
+  },
+  {
+    name: "ERC173FacetTimelockable",
+    displayName: "Ownership Controls",
+    cluster: "governance-admin",
+    businessSummary:
+      "Manages contract ownership changes behind a timelocked approval path.",
+    operationalImpact:
+      "This is the top-level governance handoff mechanism for who ultimately controls the fund's on-chain contract shell.",
+    eipReference: "EIP-173",
+    requiredRoles: ["OWNER"],
+  },
+  {
+    name: "AccessControlFacetTimelockable",
+    displayName: "Role Administration",
+    cluster: "governance-admin",
+    businessSummary:
+      "Grants, revokes, and audits operational roles behind timelocked controls.",
+    operationalImpact:
+      "This is the permissioning layer for the fund. It determines who can mint, manage accounts, pause the token, and administer other controls.",
+    requiredRoles: ["DEFAULT_ADMIN_ROLE"],
+  },
+  {
+    name: "TimelockableFacet",
+    displayName: "Governance Timelock",
+    cluster: "governance-admin",
+    businessSummary:
+      "Queues, revokes, and executes delayed administrative actions.",
+    operationalImpact:
+      "This is the operational safety rail that forces sensitive actions through a review window before they can take effect.",
+    requiredRoles: ["DEFAULT_ADMIN_ROLE"],
+  },
+  {
+    name: "PausableFacetTimelockable",
+    displayName: "Emergency Pause",
+    cluster: "governance-admin",
+    businessSummary:
+      "Pauses or unpauses the fund token under timelocked governance controls.",
+    operationalImpact:
+      "This is the emergency brake for the token, allowing operations to halt activity during incidents and re-enable it once risk is addressed.",
+    requiredRoles: ["TOKEN_ADMIN"],
+  },
+  {
+    name: "DiamondCutFacet",
+    displayName: "Module Upgrades",
+    cluster: "protocol-internals",
+    businessSummary:
+      "Adds, replaces, or removes Diamond modules and their function selectors.",
+    operationalImpact:
+      "This is the upgrade mechanism that changes which modules the MONY Fund Token can delegate into.",
+    eipReference: "EIP-2535",
+    requiredRoles: ["OWNER"],
+  },
+  {
+    name: "DiamondLoupeFacet",
+    displayName: "Contract Inspector",
+    cluster: "protocol-internals",
+    businessSummary:
+      "Lists facets, addresses, and function selectors for the Diamond proxy.",
+    operationalImpact:
+      "This is the protocol inventory endpoint used by engineers and auditors to verify the current module composition.",
+    eipReference: "EIP-2535",
+    requiredRoles: [],
+  },
+  {
+    name: "ERC165Facet",
+    displayName: "Interface Registry",
+    cluster: "protocol-internals",
+    businessSummary:
+      "Declares which interfaces the contract stack currently supports.",
+    operationalImpact:
+      "This module helps external integrations and auditors confirm which standards the protocol exposes.",
+    eipReference: "EIP-165",
+    requiredRoles: ["OWNER"],
+  },
+];
+
+export const FACET_REGISTRY = new Map(
+  FACET_METADATA.map((metadata) => [metadata.name, metadata]),
+);
+
+export const BUSINESS_CLUSTERS: ClusterDefinition[] = [
+  {
+    id: "subscriptions-redemptions",
+    label: "Subscriptions & Redemptions",
+    subtitle: "How money flows in and out of the fund",
+    colorPalette: "green",
+    facetNames: [
+      "MintableFacet",
+      "BurnableFacet",
+      "BurnPreparableFacet",
+      "BurnRespondableFacet",
+    ],
+  },
+  {
+    id: "fund-token",
+    label: "Fund Token",
+    subtitle: "What investors hold and how the token behaves",
+    colorPalette: "blue",
+    facetNames: [
+      "ERC20FacetTransferBurnableStoppable",
+      "TokenMetadataFacet",
+      "ManagedTokenFacetTimelockable",
+    ],
+  },
+  {
+    id: "investor-compliance",
+    label: "Investor Compliance",
+    subtitle: "Per-account controls for legal and regulatory enforcement",
+    colorPalette: "red",
+    facetNames: ["ManagedAccountFacet", "StopCodesFacet"],
+  },
+  {
+    id: "governance-admin",
+    label: "Governance & Administration",
+    subtitle: "Who can operate the fund and what safeguards apply",
+    colorPalette: "purple",
+    facetNames: [
+      "ERC173FacetTimelockable",
+      "AccessControlFacetTimelockable",
+      "TimelockableFacet",
+      "PausableFacetTimelockable",
+    ],
+  },
+  {
+    id: "protocol-internals",
+    label: "Protocol Internals",
+    subtitle: "Diamond module wiring and interface registration",
+    colorPalette: "gray",
+    facetNames: ["DiamondCutFacet", "DiamondLoupeFacet", "ERC165Facet"],
+  },
+];
