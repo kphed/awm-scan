@@ -1,6 +1,24 @@
 [profile.default]
 src = "src"
+test = "test"
+script = "script"
 out = "out"
 libs = ["lib"]
+solc = "0.8.26"
+auto_detect_solc = false
+evm_version = "paris"
+optimizer = false
+optimizer_runs = 200
+skip = ["src/diamond-proxy"]
+
+[profile.diamond-proxy]
+src = "src/diamond-proxy"
+out = "out/diamond-proxy"
+libs = ["lib"]
+solc = "0.8.17"
+auto_detect_solc = false
+optimizer = false
+optimizer_runs = 200
+cache_path = "cache/diamond-proxy"
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
