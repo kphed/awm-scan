@@ -7,7 +7,6 @@ const UserMenu = () => {
       <Menu.Trigger rounded="full">
         <Avatar.Root>
           <Avatar.Fallback />
-          <Avatar.Image src="https://i.pravatar.cc/300" />
         </Avatar.Root>
       </Menu.Trigger>
       <Portal>

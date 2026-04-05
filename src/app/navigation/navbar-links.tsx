@@ -7,7 +7,7 @@ const NavbarLinks = (props: StackProps) => {
       gap={{ base: "6", md: "8" }}
       {...props}
     >
-      {["Dashboard", "Projects", "Reports", "Analytics"].map((item) => (
+      {["Explorer", "Architecture"].map((item) => (
         <Link
           key={item}
           fontWeight="medium"
