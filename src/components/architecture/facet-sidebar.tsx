@@ -4,11 +4,13 @@ import {
   Box,
   Heading,
   HStack,
+  Link,
   Stack,
   Text,
   Wrap,
 } from "@chakra-ui/react";
 import type { ArchitectureFacet } from "@/lib/contracts";
+import { eipToUrl, truncateAddress } from "@/lib/format";
 import EventList from "./event-list";
 import MethodList from "./method-list";
 import SourceViewer from "./source-viewer";
@@ -23,17 +25,12 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
       <Stack gap="4">
         <HStack justify="space-between" align="start" gap="4">
           <Stack gap="2">
-            <Wrap gap="2">
-              <Badge colorPalette={facet.colorPalette} variant="subtle">
-                {facet.cluster.replace(/-/g, " ")}
-              </Badge>
-              {facet.isFallback ? (
-                <Badge colorPalette="orange" variant="subtle">
-                  Metadata Missing
-                </Badge>
-              ) : null}
-            </Wrap>
             <Heading size="lg">{facet.displayName}</Heading>
+            {facet.isFallback ? (
+              <Badge colorPalette="orange" variant="subtle" width="fit-content">
+                Metadata Missing
+              </Badge>
+            ) : null}
             <Text
               color="fg.muted"
               fontFamily="var(--font-geist-mono)"
@@ -41,6 +38,21 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
             >
               {facet.name}
             </Text>
+            {facet.address ? (
+              <Link
+                href={`https://etherscan.io/address/${facet.address}`}
+                target="_blank"
+                rel="noreferrer"
+                color="fg.muted"
+                fontFamily="var(--font-geist-mono)"
+                fontSize="sm"
+                textDecoration="underline"
+                textUnderlineOffset="0.2em"
+                width="fit-content"
+              >
+                {truncateAddress(facet.address)}
+              </Link>
+            ) : null}
           </Stack>
         </HStack>
 
@@ -87,9 +99,25 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
               <Text fontWeight="medium" mb="2">
                 Standards
               </Text>
-              <Badge colorPalette="blue" variant="subtle">
-                {facet.eipReference}
-              </Badge>
+              {(() => {
+                const eipUrl = eipToUrl(facet.eipReference);
+
+                return eipUrl ? (
+                  <Link href={eipUrl} target="_blank" rel="noreferrer">
+                    <Badge
+                      colorPalette="blue"
+                      variant="subtle"
+                      cursor="pointer"
+                    >
+                      {facet.eipReference}
+                    </Badge>
+                  </Link>
+                ) : (
+                  <Badge colorPalette="blue" variant="subtle">
+                    {facet.eipReference}
+                  </Badge>
+                );
+              })()}
             </Box>
           ) : null}
         </Stack>

@@ -3,7 +3,9 @@ import burnableSource from "../src/contracts/source/BurnableFacet.json";
 import {
   assembleArchitectureData,
   extractPrimarySourceCode,
+  getEventDescription,
   getAllFacets,
+  getMethodDescription,
 } from "../src/lib/contracts";
 import {
   BUSINESS_CLUSTERS,
@@ -75,5 +77,26 @@ describe("contracts data layer", () => {
       businessSummary: "No description available — metadata entry required.",
       isFallback: true,
     });
+  });
+
+  test("threads verified deployment addresses into assembled facets", () => {
+    const data = assembleArchitectureData();
+    const burnableFacet = data.clusters
+      .flatMap((cluster) => cluster.facets)
+      .find((facet) => facet.name === "BurnableFacet");
+
+    expect(burnableFacet?.address).toBe(
+      "0x88183F91a0A7315BD3e2102BE7520c88cE9EFF67",
+    );
+  });
+
+  test("returns authored method and event descriptions when present", () => {
+    expect(getMethodDescription("mint(bytes32,address,uint256)")).toContain(
+      "Creates new fund tokens",
+    );
+    expect(
+      getEventDescription("Burn(bytes32,address,address,uint256)"),
+    ).toContain("burn");
+    expect(getMethodDescription("owner()")).toBeNull();
   });
 });

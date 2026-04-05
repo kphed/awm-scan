@@ -1,16 +1,15 @@
 import { Badge, Card, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import type { DiamondProxyData } from "@/lib/contracts";
+import { eipToUrl, truncateAddress } from "@/lib/format";
 
 interface DiamondHeaderProps {
   diamondProxy: DiamondProxyData;
   totalFacets: number;
 }
 
-function truncateAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
 const DiamondHeader = ({ diamondProxy, totalFacets }: DiamondHeaderProps) => {
+  const eip2535Url = eipToUrl("EIP-2535");
+
   return (
     <Card.Root
       bg="bg.panel"
@@ -37,12 +36,25 @@ const DiamondHeader = ({ diamondProxy, totalFacets }: DiamondHeaderProps) => {
               </Text>
             </Stack>
             <Badge colorPalette="blue" variant="subtle">
-              Hero Proxy
+              Diamond Proxy
             </Badge>
           </HStack>
 
           <Text color="fg.muted">
-            EIP-2535 Diamond Proxy · {totalFacets} modules · Ethereum Mainnet
+            {eip2535Url ? (
+              <Link
+                href={eip2535Url}
+                target="_blank"
+                rel="noreferrer"
+                textDecoration="underline"
+                textUnderlineOffset="0.2em"
+              >
+                EIP-2535
+              </Link>
+            ) : (
+              "EIP-2535"
+            )}{" "}
+            Diamond Proxy · {totalFacets} facets/modules · Ethereum Mainnet
           </Text>
         </Stack>
 

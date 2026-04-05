@@ -54,6 +54,7 @@ export interface ClusterDefinition {
 
 export interface ArchitectureFacet extends FacetData, FacetMetadata {
   colorPalette: string;
+  address?: string;
   isFallback?: boolean;
 }
 

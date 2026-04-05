@@ -1,4 +1,4 @@
-import { FACT_TOKEN_DIAMOND_ADDRESS } from "./artifacts";
+import { FACT_TOKEN_DIAMOND_ADDRESS, SOURCE_ARTIFACTS } from "./artifacts";
 import { getAllFacets } from "./abi-parser";
 import { BUSINESS_CLUSTERS, FACET_REGISTRY } from "./registry";
 import type {
@@ -34,6 +34,10 @@ export function assembleArchitectureData(
   const facetRegistry = options.facetRegistry ?? FACET_REGISTRY;
   const clusterDefinitions = options.clusterDefinitions ?? BUSINESS_CLUSTERS;
   const facetMap = new Map(allFacets.map((facet) => [facet.name, facet]));
+  const sourceArtifacts = SOURCE_ARTIFACTS as Record<
+    string,
+    { address?: string }
+  >;
   const diamondProxy = facetMap.get("FactTokenDiamond");
 
   if (!diamondProxy) {
@@ -67,6 +71,7 @@ export function assembleArchitectureData(
           ...facet,
           ...metadata,
           colorPalette: cluster.colorPalette,
+          address: sourceArtifacts[facetName]?.address ?? undefined,
           isFallback: false,
         };
 
@@ -99,6 +104,7 @@ export function assembleArchitectureData(
       ...facet,
       ...createFallbackMetadata(facet.name),
       colorPalette: internalsCluster.colorPalette,
+      address: sourceArtifacts[facet.name]?.address ?? undefined,
       isFallback: true,
     });
   }

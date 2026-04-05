@@ -1,4 +1,5 @@
 import { Box, Text } from "@chakra-ui/react";
+import { memo } from "react";
 import type { ArchitectureFacet } from "@/lib/contracts";
 
 interface FacetCardProps {
@@ -7,7 +8,7 @@ interface FacetCardProps {
   onSelect: (facet: ArchitectureFacet) => void;
 }
 
-const FacetCard = ({ facet, isSelected, onSelect }: FacetCardProps) => {
+const FacetCard = memo(({ facet, isSelected, onSelect }: FacetCardProps) => {
   return (
     <Box
       as="button"
@@ -27,7 +28,7 @@ const FacetCard = ({ facet, isSelected, onSelect }: FacetCardProps) => {
       _hover={{
         bg: isSelected
           ? `${facet.colorPalette}.50`
-          : `${facet.colorPalette}.50`,
+          : `${facet.colorPalette}.subtle`,
         borderColor: `${facet.colorPalette}.200`,
       }}
       onClick={() => onSelect(facet)}
@@ -37,6 +38,8 @@ const FacetCard = ({ facet, isSelected, onSelect }: FacetCardProps) => {
       </Text>
     </Box>
   );
-};
+});
+
+FacetCard.displayName = "FacetCard";
 
 export default FacetCard;

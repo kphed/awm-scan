@@ -6,6 +6,7 @@ import {
   Center,
   Drawer,
   Flex,
+  Link,
   Portal,
   Stack,
   Text,
@@ -40,6 +41,27 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
               diamondProxy={data.diamondProxy}
               totalFacets={data.stats.totalFacets}
             />
+            <Box>
+              <Text color="fg.muted" fontSize="sm" lineHeight="tall">
+                The MONY Fund Token uses the{" "}
+                <Link
+                  href="https://eips.ethereum.org/EIPS/eip-2535"
+                  target="_blank"
+                  rel="noreferrer"
+                  textDecoration="underline"
+                  textUnderlineOffset="0.2em"
+                >
+                  EIP-2535 Diamond
+                </Link>{" "}
+                proxy pattern, which splits the contract&apos;s functionality
+                across multiple modules (called &quot;facets&quot;). This design
+                lets each facet be developed, audited, and upgraded
+                independently, without running into Solidity&apos;s 24 KB
+                contract size limit. Each group below represents a business
+                function of the protocol, and each row is a facet that handles a
+                specific capability.
+              </Text>
+            </Box>
             {data.clusters.map((cluster) => (
               <ClusterGroup
                 key={cluster.id}
@@ -65,7 +87,7 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
             bg="bg.canvas"
             shadow="sm"
           >
-            <Card.Body>
+            <Card.Body maxH="calc(100vh - 3rem)" overflowY="auto">
               {selectedFacet ? (
                 <FacetSidebar facet={selectedFacet} />
               ) : (

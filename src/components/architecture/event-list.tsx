@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { LuChevronDown } from "react-icons/lu";
-import type { ParsedEvent } from "@/lib/contracts";
+import { getEventDescription, type ParsedEvent } from "@/lib/contracts";
 
 interface EventListProps {
   events: ParsedEvent[];
@@ -40,9 +40,9 @@ const EventList = ({ events }: EventListProps) => {
               alignItems="start"
               gap="3"
             >
-              <Stack gap="1" align="start" flex="1">
+              <Stack gap="1" align="start" flex="1" minW="0">
                 <Code fontSize="sm">{event.name}</Code>
-                <Text color="fg.muted" fontSize="sm">
+                <Text color="fg.muted" fontSize="sm" truncate>
                   {event.signature}
                 </Text>
               </Stack>
@@ -55,7 +55,17 @@ const EventList = ({ events }: EventListProps) => {
             </Collapsible.Trigger>
             <Collapsible.Content>
               <Separator />
-              <Stack px="4" py="4" gap="2">
+              <Stack px="4" py="4" gap="4">
+                <Box>
+                  <Text fontSize="sm" fontWeight="medium">
+                    Description
+                  </Text>
+                  <Text color="fg.muted" fontSize="sm">
+                    {getEventDescription(event.signature) ??
+                      "No description available."}
+                  </Text>
+                </Box>
+
                 {event.inputs.length === 0 ? (
                   <Text color="fg.muted" fontSize="sm">
                     No event parameters
@@ -64,13 +74,16 @@ const EventList = ({ events }: EventListProps) => {
                   event.inputs.map((input, inputIndex) => (
                     <HStack
                       key={`${event.signature}-param-${inputIndex}`}
-                      justify="space-between"
-                      align="start"
+                      gap="2"
+                      align="center"
+                      flexWrap="wrap"
                     >
-                      <Text fontSize="sm">
-                        <Code>{input.name || `arg${inputIndex}`}</Code> ·{" "}
+                      <Code fontSize="sm">
+                        {input.name || `arg${inputIndex}`}
+                      </Code>
+                      <Badge colorPalette="gray" variant="subtle" fontSize="xs">
                         {input.type}
-                      </Text>
+                      </Badge>
                       {input.indexed ? (
                         <Badge colorPalette="purple" variant="subtle">
                           indexed

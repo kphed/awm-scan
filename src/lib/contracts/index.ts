@@ -5,6 +5,7 @@ export {
 } from "./artifacts";
 export { getAllFacets, parseFacetData } from "./abi-parser";
 export { assembleArchitectureData, getArchitectureData } from "./assemble";
+export { getEventDescription, getMethodDescription } from "./descriptions";
 export { BUSINESS_CLUSTERS, FACET_REGISTRY } from "./registry";
 export { extractPrimarySourceCode, getFacetSourceCode } from "./source-parser";
 export type {
