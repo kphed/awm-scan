@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Container, HStack } from "@chakra-ui/react";
 import Logo from "./logo";
 import MobilePopover from "./mobile-popover";
