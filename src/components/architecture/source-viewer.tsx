@@ -44,7 +44,12 @@ const SourceViewer = ({
       >
         <Tabs.List overflowX="auto" overflowY="hidden">
           {files.map((file) => (
-            <Tabs.Trigger key={file.path} value={file.path}>
+            <Tabs.Trigger
+              key={file.path}
+              value={file.path}
+              flexShrink={0}
+              whiteSpace="nowrap"
+            >
               {file.name}
             </Tabs.Trigger>
           ))}

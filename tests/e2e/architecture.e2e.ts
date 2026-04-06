@@ -199,6 +199,56 @@ test("architecture page renders progressive disclosure without browser errors", 
   expect(consoleErrors).toEqual([]);
 });
 
+test("source code file tabs preserve readable labels and horizontal scrolling", async ({
+  page,
+}) => {
+  await page.goto("/architecture");
+  await page.getByRole("button", { name: "Subscription Processing" }).click();
+  await page.getByRole("button", { name: "Source Code" }).click();
+
+  const sourceCodeRegion = page.getByRole("region", { name: "Source Code" });
+  const sourceFileTabs = sourceCodeRegion.getByRole("tab");
+
+  await expect(sourceFileTabs).toHaveCount(9);
+
+  const tabMetrics = await sourceFileTabs.evaluateAll((tabs) =>
+    tabs.map((tab) => {
+      const style = window.getComputedStyle(tab);
+      return {
+        text: tab.textContent?.trim() ?? "",
+        flexShrink: style.flexShrink,
+        whiteSpace: style.whiteSpace,
+      };
+    }),
+  );
+
+  expect(tabMetrics).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        text: "MintableFacet.sol",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+      expect.objectContaining({
+        text: "LibAccessControl.sol",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+    ]),
+  );
+
+  const tabListOverflow = await sourceCodeRegion.locator('[role="tablist"]').evaluate(
+    (element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    }),
+  );
+
+  expect(tabListOverflow.scrollWidth).toBeGreaterThan(
+    tabListOverflow.clientWidth,
+  );
+});
+
 test("source explorer renders file navigation and deep-linked line context", async ({
   page,
 }) => {
