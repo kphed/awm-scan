@@ -6,6 +6,17 @@ export {
 export { getAllFacets, parseFacetData } from "./abi-parser";
 export { assembleArchitectureData, getArchitectureData } from "./assemble";
 export { getEventDescription, getMethodDescription } from "./descriptions";
+export {
+  getEventFacetMap,
+  getEventSignature,
+  getMergedEventAbi,
+} from "./events";
+export type {
+  EventSnapshot,
+  IndexedEvent,
+  IndexerCursor,
+  JsonSafeValue,
+} from "./event-types";
 export { LIFECYCLE_FLOWS, type FlowStep, type LifecycleFlow } from "./flows";
 export {
   ROLE_DESCRIPTIONS,

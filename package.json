@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "bun scripts/extractSourceMetadata.ts && next build",
+    "build": "bun scripts/extractSourceMetadata.ts && bun scripts/indexEvents.ts && bun scripts/copyEventSnapshot.ts && next build",
     "start": "next start",
     "lint": "tsc -p ./tsconfig.lint.json --noEmit && bunx eslint 'src/**/*.{ts,tsx}' && bunx prettier 'src/**/*.{ts,tsx}' --check",
     "format": "bunx prettier 'src/**/*.{ts,tsx}' --write",
     "test": "bun test",
     "contracts:source-metadata": "bun scripts/extractSourceMetadata.ts",
+    "index:events": "bun scripts/indexEvents.ts",
     "test:e2e": "bunx playwright test",
     "test:e2e:accept": "bunx playwright test --update-snapshots",
     "test:e2e:update": "bun run test:e2e:accept && bun run test:e2e"
