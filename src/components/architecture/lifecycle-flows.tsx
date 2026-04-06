@@ -45,7 +45,12 @@ const LifecycleFlows = ({ data, onSelectFacet }: LifecycleFlowsProps) => {
       <Tabs.Root defaultValue={LIFECYCLE_FLOWS[0]?.id} variant="enclosed">
         <Tabs.List overflowX="auto" overflowY="hidden">
           {LIFECYCLE_FLOWS.map((flow) => (
-            <Tabs.Trigger key={flow.id} value={flow.id}>
+            <Tabs.Trigger
+              key={flow.id}
+              value={flow.id}
+              flexShrink={0}
+              whiteSpace="nowrap"
+            >
               {flow.name}
             </Tabs.Trigger>
           ))}

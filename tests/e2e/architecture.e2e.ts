@@ -148,16 +148,41 @@ test("architecture page renders progressive disclosure without browser errors", 
     page.getByRole("button", { name: "Clear dependency filter" }),
   ).toBeVisible();
   await page.getByText("Proof snippet", { exact: false }).first().click();
-  await expect(
-    page.getByText("LibERC20.ref()._totalSupply", { exact: false }),
-  ).toBeVisible();
+  const proofSnippet = page
+    .getByText("LibERC20.ref()._totalSupply", { exact: false })
+    .first();
+  await expect(proofSnippet).toBeVisible();
+  const proofFormatting = await proofSnippet.evaluate((element) => {
+    const whiteSpace = window.getComputedStyle(element).whiteSpace;
+    let current: HTMLElement | null = element.parentElement;
+    let scrollContainer: { overflowX: string; overflowY: string } | null = null;
+
+    while (current) {
+      const style = window.getComputedStyle(current);
+      if (style.overflowX === "auto" || style.overflow === "auto") {
+        scrollContainer = {
+          overflowX: style.overflowX,
+          overflowY: style.overflowY,
+        };
+        break;
+      }
+
+      current = current.parentElement;
+    }
+
+    return { whiteSpace, scrollContainer };
+  });
+  expect(proofFormatting.whiteSpace).toBe("pre");
+  expect(proofFormatting.scrollContainer).not.toBeNull();
   await expect(
     page.getByRole("button", { name: "Token Status Controls" }),
   ).toHaveCount(0);
   await page.keyboard.press("Escape");
 
   await page.getByRole("tab", { name: "Shared Libraries" }).click();
-  await expect(page.getByText("LibAccessControl", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("LibAccessControl", { exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: /LibAccessControl/i }).click();
   await expect(
     page.getByText("MintableFacet", { exact: false }).first(),
@@ -237,16 +262,88 @@ test("source code file tabs preserve readable labels and horizontal scrolling", 
     ]),
   );
 
-  const tabListOverflow = await sourceCodeRegion.locator('[role="tablist"]').evaluate(
-    (element) => ({
+  const tabListOverflow = await sourceCodeRegion
+    .locator('[role="tablist"]')
+    .evaluate((element) => ({
       clientWidth: element.clientWidth,
       scrollWidth: element.scrollWidth,
-    }),
-  );
+    }));
 
   expect(tabListOverflow.scrollWidth).toBeGreaterThan(
     tabListOverflow.clientWidth,
   );
+});
+
+test("architecture and lifecycle flow tabs preserve readable labels on narrow viewports", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/architecture");
+
+  const architectureTabMetrics = await page
+    .locator('[role="tablist"]')
+    .first()
+    .locator('[role="tab"]')
+    .evaluateAll((tabs) =>
+      tabs.map((tab) => {
+        const style = window.getComputedStyle(tab);
+
+        return {
+          text: tab.textContent?.trim() ?? "",
+          flexShrink: style.flexShrink,
+          whiteSpace: style.whiteSpace,
+        };
+      }),
+    );
+
+  expect(architectureTabMetrics).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        text: "Permission Matrix",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+      expect.objectContaining({
+        text: "Shared Libraries",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+    ]),
+  );
+
+  await page.getByRole("tab", { name: "Lifecycle Flows" }).click();
+
+  const flowTabList = page.locator('[role="tablist"]').nth(1);
+  const lifecycleTabMetrics = await flowTabList
+    .locator('[role="tab"]')
+    .evaluateAll((tabs) =>
+      tabs.map((tab) => {
+        const style = window.getComputedStyle(tab);
+
+        return {
+          text: tab.textContent?.trim() ?? "",
+          flexShrink: style.flexShrink,
+          whiteSpace: style.whiteSpace,
+        };
+      }),
+    );
+
+  expect(lifecycleTabMetrics).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        text: "Gated Redemption (Prepare → Approve → Burn)",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+      expect.objectContaining({
+        text: "Diamond Module Upgrade",
+        flexShrink: "0",
+        whiteSpace: "nowrap",
+      }),
+    ]),
+  );
+
+  await expect(flowTabList.locator('[role="tab"]')).toHaveCount(5);
 });
 
 test("source explorer renders file navigation and deep-linked line context", async ({
@@ -329,7 +426,9 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
 
   await page.keyboard.press("Escape");
   await page.getByRole("tab", { name: "Diamond Module Upgrade" }).click();
-  await expect(page.getByText("Upgrade Prepared", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Upgrade Prepared", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("Upgrade Proposed", { exact: true })).toHaveCount(
     0,
   );

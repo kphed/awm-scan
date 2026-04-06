@@ -106,13 +106,13 @@ describe("contracts data layer", () => {
       (reference) => reference.libraryName === "LibStopCodes",
     );
 
-    expect(mintableFacet?.methodSource["mint(bytes32,address,uint256)"]).toMatchObject(
-      {
-        filePath: "facets/MintableFacet.sol",
-        startLine: 49,
-        endLine: 65,
-      },
-    );
+    expect(
+      mintableFacet?.methodSource["mint(bytes32,address,uint256)"],
+    ).toMatchObject({
+      filePath: "facets/MintableFacet.sol",
+      startLine: 49,
+      endLine: 65,
+    });
     expect(
       mintableFacet?.methodSource["mint(bytes32,address,uint256)"]?.natspec,
     ).toMatchObject({
@@ -160,9 +160,11 @@ describe("contracts data layer", () => {
         }),
       ]),
     });
-    expect(explorerData.importGraph["libraries/LibMintable.sol"]).toMatchObject({
-      importedBy: expect.arrayContaining(["facets/MintableFacet.sol"]),
-    });
+    expect(explorerData.importGraph["libraries/LibMintable.sol"]).toMatchObject(
+      {
+        importedBy: expect.arrayContaining(["facets/MintableFacet.sol"]),
+      },
+    );
   });
 
   test("returns authored method and event descriptions when present", () => {
@@ -539,6 +541,18 @@ describe("contracts data layer", () => {
           facetMethods,
           `${flow.id}:${step.label}:${step.methodName}`,
         ).toContain(step.methodName);
+      }
+    }
+  });
+
+  test("keeps lifecycle flow related-flow references aligned with flow ids", () => {
+    const flowIds = new Set(LIFECYCLE_FLOWS.map((flow) => flow.id));
+
+    for (const flow of LIFECYCLE_FLOWS) {
+      for (const relatedFlowId of flow.relatedFlows ?? []) {
+        expect(flowIds.has(relatedFlowId), `${flow.id}:${relatedFlowId}`).toBe(
+          true,
+        );
       }
     }
   });

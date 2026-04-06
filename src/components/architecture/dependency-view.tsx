@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Button,
   Card,
   Collapsible,
@@ -312,13 +313,18 @@ const DependencyView = ({ data, onSelectFacet }: DependencyViewProps) => {
                                                     -
                                                     {relationship.proof.endLine}
                                                   </Text>
-                                                  <Text
-                                                    fontFamily="var(--font-geist-mono)"
-                                                    fontSize="xs"
-                                                    whiteSpace="pre-wrap"
-                                                  >
-                                                    {relationship.proof.snippet}
-                                                  </Text>
+                                                  <Box overflow="auto">
+                                                    <Text
+                                                      fontFamily="var(--font-geist-mono)"
+                                                      fontSize="xs"
+                                                      whiteSpace="pre"
+                                                    >
+                                                      {
+                                                        relationship.proof
+                                                          .snippet
+                                                      }
+                                                    </Text>
+                                                  </Box>
                                                   <Link
                                                     as={NextLink}
                                                     href={buildSourceExplorerHref(

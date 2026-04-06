@@ -85,13 +85,33 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
               }}
             >
               <Tabs.List overflowX="auto" overflowY="hidden">
-                <Tabs.Trigger value="map">Module Map</Tabs.Trigger>
-                <Tabs.Trigger value="permissions">
+                <Tabs.Trigger value="map" flexShrink={0} whiteSpace="nowrap">
+                  Module Map
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                  value="permissions"
+                  flexShrink={0}
+                  whiteSpace="nowrap"
+                >
                   Permission Matrix
                 </Tabs.Trigger>
-                <Tabs.Trigger value="dependencies">Dependencies</Tabs.Trigger>
-                <Tabs.Trigger value="libraries">Shared Libraries</Tabs.Trigger>
-                <Tabs.Trigger value="flows">Lifecycle Flows</Tabs.Trigger>
+                <Tabs.Trigger
+                  value="dependencies"
+                  flexShrink={0}
+                  whiteSpace="nowrap"
+                >
+                  Dependencies
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                  value="libraries"
+                  flexShrink={0}
+                  whiteSpace="nowrap"
+                >
+                  Shared Libraries
+                </Tabs.Trigger>
+                <Tabs.Trigger value="flows" flexShrink={0} whiteSpace="nowrap">
+                  Lifecycle Flows
+                </Tabs.Trigger>
               </Tabs.List>
 
               <Tabs.Content value="map" pt="6">
