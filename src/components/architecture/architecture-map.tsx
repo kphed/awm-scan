@@ -13,7 +13,8 @@ import {
   Text,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { ArchitectureData, ArchitectureFacet } from "@/lib/contracts";
 import ClusterGroup from "./cluster-group";
 import DependencyView from "./dependency-view";
@@ -25,14 +26,26 @@ import PermissionMatrix from "./permission-matrix";
 
 interface ArchitectureMapProps {
   data: ArchitectureData;
+  eventOccurrenceCounts: Record<string, number>;
 }
 
-const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
+const ArchitectureMap = ({
+  data,
+  eventOccurrenceCounts,
+}: ArchitectureMapProps) => {
   const [activeTab, setActiveTab] = useState("map");
-  const [selectedFacet, setSelectedFacet] = useState<ArchitectureFacet | null>(
-    null,
-  );
   const isMobile = useBreakpointValue({ base: true, md: false }) ?? false;
+  const searchParams = useSearchParams();
+  const moduleFilter = searchParams.get("module");
+  const allFacets = useMemo(
+    () => data.clusters.flatMap((cluster) => cluster.facets),
+    [data.clusters],
+  );
+  const defaultSelectedFacet =
+    allFacets.find((facet) => facet.name === moduleFilter) ?? null;
+  const [selectedFacet, setSelectedFacet] = useState<ArchitectureFacet | null>(
+    defaultSelectedFacet,
+  );
   const showDesktopSidebar = !isMobile && activeTab === "map";
   const showOverlayDetails = Boolean(selectedFacet) && !showDesktopSidebar;
   const handleFacetSelect = useCallback((facet: ArchitectureFacet | null) => {
@@ -169,7 +182,10 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
           >
             <Card.Body maxH="calc(100vh - 3rem)" overflowY="auto">
               {selectedFacet ? (
-                <FacetSidebar facet={selectedFacet} />
+                <FacetSidebar
+                  facet={selectedFacet}
+                  eventOccurrenceCounts={eventOccurrenceCounts}
+                />
               ) : (
                 <Center minH="24rem" textAlign="center">
                   <Stack gap="2">
@@ -210,7 +226,12 @@ const ArchitectureMap = ({ data }: ArchitectureMapProps) => {
                 </Drawer.Title>
               </Drawer.Header>
               <Drawer.Body>
-                {selectedFacet ? <FacetSidebar facet={selectedFacet} /> : null}
+                {selectedFacet ? (
+                  <FacetSidebar
+                    facet={selectedFacet}
+                    eventOccurrenceCounts={eventOccurrenceCounts}
+                  />
+                ) : null}
               </Drawer.Body>
               <Drawer.CloseTrigger />
             </Drawer.Content>

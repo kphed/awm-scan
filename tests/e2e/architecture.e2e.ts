@@ -433,3 +433,30 @@ test("architecture page keeps the mobile drawer working from expansion tabs", as
     0,
   );
 });
+
+test("architecture emitted events link back to filtered explorer activity", async ({
+  page,
+}) => {
+  await page.goto("/architecture");
+  await page.getByRole("button", { name: "Subscription Processing" }).click();
+  await page.getByRole("button", { name: "Emitted Events" }).click();
+
+  await expect(
+    page.getByText(/on-chain/, { exact: false }).first(),
+  ).toBeVisible();
+
+  await page
+    .getByText("Mint(bytes32,address,address,uint256)", { exact: true })
+    .click();
+  await page.getByRole("link", { name: /View .* occurrence/i }).click();
+
+  await expect(page).toHaveURL(
+    /\/\?event=Mint&signature=Mint\(bytes32%2Caddress%2Caddress%2Cuint256\)/,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Protocol Activity" }),
+  ).toBeVisible({ timeout: 15000 });
+  await expect(
+    page.getByRole("button", { name: "Mint", exact: true }),
+  ).toBeVisible();
+});

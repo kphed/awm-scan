@@ -1,4 +1,10 @@
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { describe, expect, test } from "bun:test";
@@ -54,6 +60,34 @@ describe("event indexing", () => {
     ).toEqual(["DiamondCutFacet"]);
   });
 
+  test("fails loudly when two event signatures share the same name", async () => {
+    const eventModule = await loadEventModule();
+
+    expect(eventModule).not.toBeNull();
+
+    if (!eventModule) {
+      return;
+    }
+
+    expect(() =>
+      eventModule.buildEventNameSignatureMap([
+        {
+          type: "event",
+          name: "Transfer",
+          inputs: [{ name: "from", type: "address" }],
+        },
+        {
+          type: "event",
+          name: "Transfer",
+          inputs: [
+            { name: "from", type: "address" },
+            { name: "to", type: "address" },
+          ],
+        },
+      ]),
+    ).toThrow(/Event name overload detected for Transfer/);
+  });
+
   test("serializes a real DiamondCut log into a JSON-safe indexed event", async () => {
     const eventModule = await loadEventModule();
     const indexModule = await loadIndexModule();
@@ -103,7 +137,9 @@ describe("event indexing", () => {
       action: 0,
       functionSelectors: ["0x1f931c1c"],
     });
-    expect(indexed.args._init).toBe("0xC6B9e851a599e0Da88b39f0E8Bc2B0683A503e81");
+    expect(indexed.args._init).toBe(
+      "0xC6B9e851a599e0Da88b39f0E8Bc2B0683A503e81",
+    );
     expect(typeof indexed.args._calldata).toBe("string");
   });
 
@@ -168,7 +204,10 @@ describe("event indexing", () => {
     mkdirSync(sourceDir, { recursive: true });
     writeFileSync(
       join(sourceDir, "snapshot.json"),
-      JSON.stringify({ cursor: { lastIndexedBlock: "1", indexedAt: "now", totalEvents: 0 }, events: [] }),
+      JSON.stringify({
+        cursor: { lastIndexedBlock: "1", indexedAt: "now", totalEvents: 0 },
+        events: [],
+      }),
     );
 
     copyModule.copyEventSnapshot({

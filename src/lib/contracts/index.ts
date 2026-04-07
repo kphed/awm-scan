@@ -7,7 +7,19 @@ export { getAllFacets, parseFacetData } from "./abi-parser";
 export { assembleArchitectureData, getArchitectureData } from "./assemble";
 export { getEventDescription, getMethodDescription } from "./descriptions";
 export {
+  assertEventCategoriesCovered,
+  buildEventAttributionIndex,
+  countEventOccurrences,
+  EVENT_CATEGORIES,
+  findUncategorizedEventNames,
+  type EventAttribution,
+  type EventAttributionIndex,
+  type EventCategory,
+} from "./event-attribution";
+export {
+  buildEventNameSignatureMap,
   getEventFacetMap,
+  getEventNameSignatureMap,
   getEventSignature,
   getMergedEventAbi,
 } from "./events";
@@ -17,6 +29,12 @@ export type {
   IndexerCursor,
   JsonSafeValue,
 } from "./event-types";
+export {
+  eventId,
+  mergeIndexedEvents,
+  serializeArgs,
+  toJsonSafe,
+} from "./indexed-events";
 export { LIFECYCLE_FLOWS, type FlowStep, type LifecycleFlow } from "./flows";
 export {
   ROLE_DESCRIPTIONS,

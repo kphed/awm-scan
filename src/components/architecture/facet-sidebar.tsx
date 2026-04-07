@@ -17,10 +17,11 @@ import ModifierChain from "./modifier-chain";
 import SourceViewer from "./source-viewer";
 
 interface FacetSidebarProps {
+  eventOccurrenceCounts: Record<string, number>;
   facet: ArchitectureFacet;
 }
 
-const FacetSidebar = ({ facet }: FacetSidebarProps) => {
+const FacetSidebar = ({ eventOccurrenceCounts, facet }: FacetSidebarProps) => {
   const sourceFilesByPath = Object.fromEntries(
     facet.relatedSourceFiles.map((file) => [file.path, file]),
   );
@@ -198,7 +199,10 @@ const FacetSidebar = ({ facet }: FacetSidebarProps) => {
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
             <Accordion.ItemBody>
-              <EventList events={facet.events} />
+              <EventList
+                events={facet.events}
+                occurrenceCounts={eventOccurrenceCounts}
+              />
             </Accordion.ItemBody>
           </Accordion.ItemContent>
         </Accordion.Item>

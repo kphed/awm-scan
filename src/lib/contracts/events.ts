@@ -52,6 +52,33 @@ export function getMergedEventAbi(): RawAbiEntry[] {
   return [...merged.values()];
 }
 
+export function buildEventNameSignatureMap(entries: RawAbiEntry[]) {
+  const lookup = new Map<string, string>();
+
+  for (const entry of entries) {
+    if (!isEventEntry(entry) || !entry.name) {
+      continue;
+    }
+
+    const signature = getEventSignature(entry);
+    const existing = lookup.get(entry.name);
+
+    // The event snapshot and Explorer filters key on event names, so name
+    // overloads must fail loudly instead of producing ambiguous links.
+    if (existing && existing !== signature) {
+      throw new Error(`Event name overload detected for ${entry.name}`);
+    }
+
+    lookup.set(entry.name, signature);
+  }
+
+  return lookup;
+}
+
+export function getEventNameSignatureMap() {
+  return buildEventNameSignatureMap(getMergedEventAbi());
+}
+
 export function getEventFacetMap(): Map<string, string[]> {
   const signatureToFacets = new Map<string, string[]>();
 
